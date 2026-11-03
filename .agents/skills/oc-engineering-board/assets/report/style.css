@@ -397,6 +397,21 @@ h1 {
   font-size: 13px;
 }
 
+.issue-breakdown,
+.issue-note {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
+.issue-breakdown a {
+  color: inherit;
+}
+
+.issue-breakdown strong {
+  color: var(--ink);
+}
+
 /* Per-repository bars in the pull request tile */
 
 .bars {
@@ -1063,22 +1078,23 @@ a.tag:hover {
   font-weight: 600;
 }
 
-/* Subgrid keeps the kind badges and repository tags aligned within a group. */
+/* Each line: the title on its own row, then the kind badge, people and repository tag below it. */
 .misc-group ul {
-  display: grid;
-  grid-template-columns: max-content minmax(0, 1fr) max-content max-content;
-  column-gap: 10px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
 .misc-item {
-  display: grid;
-  grid-column: 1 / -1;
-  grid-template-columns: subgrid;
-  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
   padding: 6px 0;
+}
+
+.misc-title {
+  flex-basis: 100%;
 }
 
 .misc-item + .misc-item {
@@ -1086,7 +1102,7 @@ a.tag:hover {
 }
 
 .misc-item .tag {
-  justify-self: end;
+  margin-left: auto;
 }
 
 .misc-people {
@@ -1106,7 +1122,6 @@ a.tag:hover {
 }
 
 .kind {
-  justify-self: start;
   padding: 0 7px;
   border-radius: 999px;
   font-size: 11px;
@@ -1171,12 +1186,6 @@ a.tag:hover {
   }
   .misc {
     columns: 1;
-  }
-  .misc-group ul {
-    grid-template-columns: minmax(0, 1fr) max-content max-content;
-  }
-  .misc-item .kind {
-    grid-column: 1 / -1;
   }
   .row {
     grid-template-columns: minmax(0, 1fr);

@@ -11,7 +11,7 @@ The draft was built on 2026-11-03 from a session that could read the board only 
 - **#9053** (added to In progress by the operator) has a Start date of Nov 5, after the period, so the report shows none.
 - **In progress is inferred** from open cards with activity in October, not from their Status.
 - **Areas guessed for cards with none set:** #9026 Internationalization improvements → Improvements; #8977 Connect services to Sentry → Reliability & monitoring.
-- **Issues** (118 closed, 115 opened; September 13 and 20): most of October's come from filling in the board with retroactive issues, so the jump overstates the change. Consider a note in the report.
+- **Issues** (156 closed: 118 resolved, 38 not planned or duplicate; 115 opened; September 19 closed: 13 and 6, 20 opened): October is when part of the issue triage started being automated. Of the 156, 94 were issues opened before October (57 resolved, 37 not planned or duplicate), mostly closed by the triage; most of the 61 opened and resolved in October are retroactive board issues recording shipped work. The report's issues tile states the triage in a note.
 - **Board data to check:** #8998 has a Target date (2026-08-21) before its Start date (2026-09-01), so it is left out of October's shipped list; #8935 closed on Oct 19 but has a Target date of Oct 30; #8997, #8975 and #9001 are open with Target dates that have passed.
 - **Proposed board changes awaiting approval:**
   - New card "Tax form improvements for hosts" (Compliance) for opencollective-api#12035, #12375, #12396, #12398, #12403, #12405 and opencollective-frontend#12354, #12480, #12628. These are listed under misc until the card exists.

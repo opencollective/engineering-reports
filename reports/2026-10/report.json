@@ -22,6 +22,7 @@
     "More **unused features** were retired after notice, keeping the platform **simpler and safer to change**.",
     "**Better monitoring**, so we spot problems before users report them.",
     "Progress on **translations**: automated **French and German** translations, with style guides to keep them consistent.",
+    "We fixed **24 bugs** and made **12 smaller improvements** across expenses and payouts, contributions, the dashboard, tax forms, accounts and hosting.",
     "**Security**: we triaged **294 reports**, deployed **16 fixes**, and are automating how new reports are handled."
   ],
   "metrics": {
@@ -58,13 +59,16 @@
     "issues": {
       "repo": "opencollective/opencollective",
       "closed": {
-        "value": 118,
-        "previous": 13
+        "value": 156,
+        "previous": 19,
+        "completed": 118,
+        "notPlanned": 38
       },
       "opened": {
         "value": 115,
         "previous": 20
-      }
+      },
+      "note": "In October we started automating part of **issue triage**, which closed many older issues that were already fixed, out of scope or duplicates."
     }
   },
   "shipped": [

@@ -55,6 +55,9 @@ test('stats show merged pull requests per repository and no removed metrics', ()
   assert.match(html, /<span class="issue-label"><svg class="octicon[^>]*>.*?<\/svg>Closed<\/span>\s*<span class="tile-value">118/);
   assert.match(html, /<span class="issue-label"><svg class="octicon[^>]*>.*?<\/svg>Opened<\/span>\s*<span class="tile-value">104/);
   assert.match(html, /issues\?q=is%3Aissue\+created%3A2026-10-01..2026-10-31/);
+  assert.match(html, /issues\?q=is%3Aissue\+closed%3A2026-10-01..2026-10-31"/, 'Closed counts every close reason');
+  assert.match(html, /<p class="issue-breakdown">Closed as <a [^>]*reason%3Acompleted"><strong>96<\/strong> resolved<\/a> · <a [^>]*-reason%3Acompleted"><strong>22<\/strong> not planned or duplicate<\/a><\/p>/);
+  assert.match(html, /<p class="issue-note">We started automating part of <strong>issue triage<\/strong>/);
   assert.doesNotMatch(html, /Contributors|Projects shipped/);
   const report = clone();
   report.metrics.contributors = { value: 4 };
@@ -66,13 +69,26 @@ test('stats show merged pull requests per repository and no removed metrics', ()
   assert.ok(errors.includes('metrics.issues.opened.value must be a non-negative integer'));
 });
 
+test('the closed issues breakdown is optional and must add up', () => {
+  const report = clone();
+  delete report.metrics.issues.closed.completed;
+  delete report.metrics.issues.closed.notPlanned;
+  delete report.metrics.issues.note;
+  assert.deepEqual(validateReport(report).errors, []);
+  assert.doesNotMatch(renderReport(report), /<p class="issue-(breakdown|note)">/);
+  report.metrics.issues.closed.completed = 100;
+  assert.ok(validateReport(report).errors.includes('metrics.issues.closed.completed and .notPlanned must both be non-negative integers'));
+  report.metrics.issues.closed.notPlanned = 10;
+  assert.ok(validateReport(report).errors.includes('metrics.issues.closed.completed + .notPlanned must equal metrics.issues.closed.value'));
+});
+
 test('highlights are bullet points, and long ones warn', () => {
   assert.match(renderReport(example), /<ul class="summary"><li><span class="hl-mark hl-0"/);
   const report = clone();
-  report.summary = Array(9).fill('x'.repeat(200));
+  report.summary = Array(10).fill('x'.repeat(200));
   const { errors, warnings } = validateReport(report);
   assert.deepEqual(errors, []);
-  assert.ok(warnings.some(w => w.includes('9 bullets')));
+  assert.ok(warnings.some(w => w.includes('10 bullets')));
   assert.ok(warnings.some(w => w.includes('summary[0] is 200 characters')));
 });
 
