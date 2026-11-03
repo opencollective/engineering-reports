@@ -1,8 +1,5 @@
 name: Build and publish reports
 
-# Pages deploys from the gh-pages branch (Settings → Pages → Deploy from a branch), which also
-# holds pull request previews under pr-preview/ (see preview.yml).
-
 on:
   push:
     branches: [main]
@@ -27,30 +24,20 @@ jobs:
       - run: npm test
       - run: npm run build
       - if: github.ref == 'refs/heads/main'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-pages-artifact@v3
         with:
-          name: site
           path: _site
-          include-hidden-files: true # keeps .nojekyll
 
   deploy:
     if: github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-    concurrency:
-      group: gh-pages-main
-      cancel-in-progress: false
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with:
-          name: site
-          path: _site
-      - uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          folder: _site
-          branch: gh-pages
-          clean-exclude: pr-preview/ # keep open pull request previews
-          force: false
+      - id: deployment
+        uses: actions/deploy-pages@v4
