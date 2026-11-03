@@ -45,6 +45,7 @@ const IMAGE_TYPES = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image
 const IMAGE_MAX_BYTES = 400 * 1024;
 const SUMMARY_MAX_BULLETS = 5;
 const SUMMARY_MAX_LENGTH = 180;
+const ITEM_SUMMARY_MAX_LENGTH = 160;
 const MISC_KINDS = [
   ['fix', 'Fix', 'Fixes'],
   ['improvement', 'Improvement', 'Improvements'],
@@ -233,6 +234,19 @@ export function validateReport(report, { baseDir } = {}) {
       }
       if (item.summary !== undefined) {
         requireString(item.summary, `${at}.summary`);
+        if (typeof item.summary === 'string' && item.summary.length > ITEM_SUMMARY_MAX_LENGTH) {
+          warnings.push(`${at}.summary is ${item.summary.length} characters; keep it to one short sentence and move details to points`);
+        }
+      }
+      if (item.points !== undefined) {
+        if (!Array.isArray(item.points) || item.points.length === 0) {
+          errors.push(`${at}.points must be a non-empty array of short strings`);
+        } else {
+          item.points.forEach((point, j) => requireString(point, `${at}.points[${j}]`));
+        }
+      }
+      if (item.upNext !== undefined) {
+        requireString(item.upNext, `${at}.upNext`);
       }
       requireDate(item.start, `${at}.start`, true);
       requireDate(item.end, `${at}.end`, true);
@@ -334,6 +348,9 @@ export function validateReport(report, { baseDir } = {}) {
           if (entry.topic !== undefined) {
             requireString(entry.topic, `${at}.topic`);
           }
+          if (entry.people !== undefined && (!Array.isArray(entry.people) || !entry.people.every(p => typeof p === 'string' && /^[A-Za-z0-9-]+$/.test(p)))) {
+            errors.push(`${at}.people must be an array of GitHub logins (people, not bots)`);
+          }
           if (!MISC_KINDS.some(([kind]) => kind === entry.kind)) {
             errors.push(`${at}.kind must be "fix" or "improvement"`);
           }
@@ -367,9 +384,10 @@ export function profileLink(login) {
   return `<a class="handle" href="https://github.com/${escapeHtml(login)}">@${escapeHtml(login)}</a>`;
 }
 
-// Escapes text, turns owner/repo#123 references into GitHub links and @handles into profile links.
+// Escapes text, turns **keywords** into bold, owner/repo#123 references into GitHub links and @handles into profile links.
 export function richText(text) {
   return escapeHtml(text)
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
     .replace(
       /\b([\w.-]+)\/([\w.-]+)#(\d+)\b/g,
       (match, owner, repo, number) => `<a href="https://github.com/${owner}/${repo}/issues/${number}">${match}</a>`,
@@ -608,6 +626,19 @@ function renderHeader(report) {
   </header>`;
 }
 
+// GitHub Octicons (MIT), inline so the page stays self-contained.
+const OCTICONS = {
+  merged:
+    'M5.45 5.154A4.25 4.25 0 0 0 9.25 7.5h1.378a2.251 2.251 0 1 1 0 1.5H9.25A5.734 5.734 0 0 1 5 7.123v3.505a2.25 2.25 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.95-.218ZM4.25 13.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm8.5-4.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM5 3.25a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z',
+  issueOpened: 'M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Z',
+  issueClosed:
+    'M11.28 6.78a.75.75 0 0 0-1.06-1.06L7.25 8.69 5.78 7.22a.75.75 0 0 0-1.06 1.06l2 2a.75.75 0 0 0 1.06 0l3.5-3.5ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0Zm-1.5 0a6.5 6.5 0 1 0-13 0 6.5 6.5 0 0 0 13 0Z',
+};
+
+function octicon(name, className) {
+  return `<svg class="octicon ${className}" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="${OCTICONS[name]}"/></svg>`;
+}
+
 // GitHub search links for the numbers, so readers can open the underlying lists.
 function searchUrl(repo, kind, query) {
   return `https://github.com/${repo}/${kind}?q=${encodeURIComponent(query).replaceAll('%20', '+')}`;
@@ -650,7 +681,7 @@ function renderPrTile(report) {
     .join('');
   return `
     <div class="tile tile-wide">
-      <p class="tile-label">Pull requests merged</p>
+      <p class="tile-label">${octicon('merged', 'octicon-merged')}Pull requests merged</p>
       <p class="tile-value">${total.toLocaleString('en-US')}${deltaBadge(total, previousTotal, metrics.previousLabel)}</p>
       ${previousLine(previousTotal, metrics.previousLabel)}
       <ul class="bars" aria-label="Pull requests merged per repository">${rows}
@@ -668,17 +699,18 @@ function shortMonth(label) {
 function renderIssuesTile(report) {
   const { metrics, period } = report;
   const { repo } = metrics.issues;
-  const stat = (label, metric, query) => `
+  const stat = (label, icon, metric, query) => `
         <a class="issue-stat" href="${escapeHtml(searchUrl(repo, 'issues', query))}">
-          <span class="issue-label">${label}</span>
+          <span class="issue-label">${octicon(icon, `octicon-${icon === 'issueOpened' ? 'open' : 'done'}`)}${label}</span>
           <span class="tile-value">${metric.value.toLocaleString('en-US')}${deltaBadge(metric.value, metric.previous, metrics.previousLabel)}</span>
           ${metric.previous === undefined ? '' : `<span class="tile-previous" title="${metric.previous.toLocaleString('en-US')} in ${escapeHtml(metrics.previousLabel)}">${metric.previous.toLocaleString('en-US')} in ${escapeHtml(shortMonth(metrics.previousLabel))}</span>`}
         </a>`;
   return `
     <div class="tile">
-      <p class="tile-label">Issues in <a href="https://github.com/${escapeHtml(repo)}/issues">${escapeHtml(repo)}</a></p>
-      <div class="issue-stats">${stat('Closed', metrics.issues.closed, `is:issue reason:completed closed:${period.start}..${period.end}`)}${stat(
+      <p class="tile-label">${octicon('issueOpened', 'octicon-neutral')}Issues<a class="tile-repo" href="https://github.com/${escapeHtml(repo)}/issues">${escapeHtml(repo)}</a></p>
+      <div class="issue-stats">${stat('Closed', 'issueClosed', metrics.issues.closed, `is:issue reason:completed closed:${period.start}..${period.end}`)}${stat(
         'Opened',
+        'issueOpened',
         metrics.issues.opened,
         `is:issue created:${period.start}..${period.end}`,
       )}
@@ -700,12 +732,26 @@ function sectionTitle(id, title, count) {
   return `<h2 class="section-title">${dot}${title}${badge}</h2>`;
 }
 
+// Highlights get a small sparkle each, cycling through a few pastel tints.
+const SPARKLE = '<svg width="12" height="12" viewBox="0 0 16 16"><path fill="currentColor" d="M8 1c.4 3.6 2.4 5.6 7 7-4.6 1.4-6.6 3.4-7 7-.4-3.6-2.4-5.6-7-7 4.6-1.4 6.6-3.4 7-7Z"/></svg>';
+const HIGHLIGHT_TINTS = 5;
+
 function renderSummary(report) {
   return `
   <section class="section" id="highlights">
     ${sectionTitle(null, 'Highlights')}
-    <ul class="summary">${report.summary.map(bullet => `<li>${richText(bullet)}</li>`).join('')}</ul>
+    <ul class="summary">${report.summary
+      .map((bullet, i) => `<li><span class="hl-mark hl-${i % HIGHLIGHT_TINTS}" aria-hidden="true">${SPARKLE}</span><span>${richText(bullet)}</span></li>`)
+      .join('')}</ul>
   </section>`;
+}
+
+// What a reader needs at a glance: one sentence, then short points, then what comes next.
+function renderDetails(item) {
+  const points = item.points?.length ? `<ul class="points">${item.points.map(point => `<li>${richText(point)}</li>`).join('')}</ul>` : '';
+  const next = item.upNext ? `<p class="up-next"><span class="up-next-label">Next</span><span>${richText(item.upNext)}</span></p>` : '';
+  const summary = item.summary ? `<p class="card-summary">${richText(item.summary)}</p>` : '';
+  return `${summary}${points}${next}`;
 }
 
 function metaList(entries) {
@@ -723,7 +769,7 @@ function renderCard(context, item, year) {
           <div class="card-body">
             ${areaPill(item.area)}
             ${titleLink(item)}
-            ${item.summary ? `<p class="card-summary">${richText(item.summary)}</p>` : ''}
+            ${renderDetails(item)}
             ${metaList([
               escapeHtml(formatRange(item.start, item.end, year) ?? '') || null,
               item.subIssues?.total ? `${item.subIssues.done}/${plural(item.subIssues.total, 'sub-issue')}` : null,
@@ -764,7 +810,7 @@ function renderRow(context, item, year, withProgress) {
       <li class="row" id="${itemId(item)}" data-filter="${slug(item.area)}">
         <div class="row-main">
           <div class="row-head">${areaPill(item.area)}${titleLink(item)}</div>
-          ${item.summary ? `<p class="card-summary">${richText(item.summary)}</p>` : ''}
+          ${renderDetails(item)}
           ${metaList([
             withProgress && item.start ? escapeHtml(formatRange(item.start, null, year)) : null,
             item.prs ? `${plural(item.prs, 'PR')} this period` : null,
@@ -827,7 +873,7 @@ function renderOngoing(context, report) {
       <li class="row row-ongoing" id="${itemId(item)}" data-filter="${slug(item.area)}">
         <div class="row-main">
           <div class="row-head">${areaPill(item.area)}${titleLink(item)}</div>
-          ${item.summary ? `<p class="card-summary">${richText(item.summary)}</p>` : ''}
+          ${renderDetails(item)}
           ${metaList([item.prs ? `${plural(item.prs, 'PR')} this period` : null, peopleList(item.people)])}
           ${done}
         </div>
@@ -854,7 +900,7 @@ function renderMisc(context, report) {
     const kindLabel = MISC_KINDS.find(([kind]) => kind === entry.kind)[1];
     const title = entry.url ? `<a href="${escapeHtml(entry.url)}">${escapeHtml(entry.title)}</a>` : escapeHtml(entry.title);
     const repo = repoFromUrl(entry.url);
-    return `<li class="misc-item" data-filter="${entry.kind}"><span class="kind kind-${entry.kind}">${kindLabel}</span><span class="misc-title">${title}</span>${repo ? `<span class="tag">${escapeHtml(repoLabel(repo))}</span>` : ''}</li>`;
+    return `<li class="misc-item" data-filter="${entry.kind}"><span class="kind kind-${entry.kind}">${kindLabel}</span><span class="misc-title">${title}</span><span class="misc-people">${peopleList(entry.people) ?? ''}</span>${repo ? `<span class="tag">${escapeHtml(repoLabel(repo))}</span>` : '<span></span>'}</li>`;
   };
   const byKind = (a, b) => MISC_KINDS.findIndex(([k]) => k === a.kind) - MISC_KINDS.findIndex(([k]) => k === b.kind);
   const topics = miscTopics(report);

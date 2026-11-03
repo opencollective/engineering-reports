@@ -46,6 +46,9 @@
   --sec-misc: #64748b;
   --overlay: rgba(15, 23, 42, 0.86);
   --toc-active: #e8f0fe;
+  /* GitHub's own state colors for the icons in the numbers tiles */
+  --gh-merged: #8250df;
+  --gh-open: #1a7f37;
   --toc-active-ink: #1452c9;
 }
 
@@ -91,6 +94,8 @@
     --sec-misc: #94a3b8;
     --overlay: rgba(2, 6, 23, 0.9);
     --toc-active: #1b2b4a;
+    --gh-merged: #ab7df8;
+    --gh-open: #3fb950;
     --toc-active-ink: #a8c4ff;
   }
 }
@@ -287,6 +292,10 @@ h1 {
 }
 
 .tile-label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
   margin: 0;
   font-size: 14px;
   color: var(--ink-2);
@@ -319,10 +328,36 @@ h1 {
   color: var(--ink-3);
 }
 
+/* Icons in the numbers tiles */
+
+.octicon {
+  flex: none;
+}
+
+.octicon-merged,
+.octicon-done {
+  color: var(--gh-merged);
+}
+
+.octicon-open {
+  color: var(--gh-open);
+}
+
+.octicon-neutral {
+  color: var(--ink-3);
+}
+
 /* Issues tile: closed and opened side by side */
 
-.tile-label a {
-  color: inherit;
+.tile-repo {
+  font-size: 12px;
+  color: var(--ink-3);
+}
+
+.issue-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .issue-stats {
@@ -447,21 +482,59 @@ h1 {
 }
 
 .summary {
+  display: grid;
+  gap: 14px;
   margin: 0;
-  padding: 16px 24px 16px 40px;
-  border: 1px solid var(--border);
+  padding: 22px 26px;
   border-radius: var(--radius);
-  background: var(--surface-muted);
+  background: linear-gradient(135deg, var(--product-tile), var(--foundations-tile));
   font-size: 15px;
-  color: var(--ink-2);
+  line-height: 1.55;
+  color: var(--ink);
+  list-style: none;
 }
 
-.summary li + li {
-  margin-top: 6px;
+.summary strong {
+  font-weight: 650;
 }
 
-.summary li::marker {
-  color: var(--ink-3);
+.summary li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.hl-mark {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  color: var(--pill-ink);
+  background: var(--pill);
+}
+
+.hl-0 {
+  --pill: var(--product-pill);
+  --pill-ink: var(--product-ink);
+}
+.hl-1 {
+  --pill: var(--reliability-pill);
+  --pill-ink: var(--reliability-ink);
+}
+.hl-2 {
+  --pill: var(--foundations-pill);
+  --pill-ink: var(--foundations-ink);
+}
+.hl-3 {
+  --pill: var(--bugs-pill);
+  --pill-ink: var(--bugs-ink);
+}
+.hl-4 {
+  --pill: var(--dx-pill);
+  --pill-ink: var(--dx-ink);
 }
 
 /* Quick filters: radio inputs styled as chips; the rules that hide items are generated per report. */
@@ -665,6 +738,50 @@ a.handle:hover {
 .card-summary {
   margin: 0;
   color: var(--ink-2);
+}
+
+.points {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--ink-2);
+}
+
+.points li {
+  position: relative;
+  padding-left: 14px;
+}
+
+.points li::before {
+  content: "";
+  position: absolute;
+  top: 0.62em;
+  left: 2px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--ink-3);
+}
+
+.up-next {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0;
+  color: var(--ink-2);
+}
+
+.up-next-label {
+  flex: none;
+  padding: 0 7px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 18px;
+  color: var(--ink-2);
+  background: var(--other-pill);
 }
 
 .meta {
@@ -949,7 +1066,7 @@ a.tag:hover {
 /* Subgrid keeps the kind badges and repository tags aligned within a group. */
 .misc-group ul {
   display: grid;
-  grid-template-columns: max-content minmax(0, 1fr) max-content;
+  grid-template-columns: max-content minmax(0, 1fr) max-content max-content;
   column-gap: 10px;
   margin: 0;
   padding: 0;
@@ -970,6 +1087,12 @@ a.tag:hover {
 
 .misc-item .tag {
   justify-self: end;
+}
+
+.misc-people {
+  font-size: 13px;
+  color: var(--ink-3);
+  white-space: nowrap;
 }
 
 .misc-title a,
@@ -1050,7 +1173,7 @@ a.tag:hover {
     columns: 1;
   }
   .misc-group ul {
-    grid-template-columns: minmax(0, 1fr) max-content;
+    grid-template-columns: minmax(0, 1fr) max-content max-content;
   }
   .misc-item .kind {
     grid-column: 1 / -1;

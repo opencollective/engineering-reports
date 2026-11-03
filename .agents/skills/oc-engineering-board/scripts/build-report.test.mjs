@@ -52,8 +52,8 @@ test('stats show merged pull requests per repository and no removed metrics', ()
     /href="https:\/\/github.com\/opencollective\/opencollective-api\/pulls\?q=is%3Apr\+is%3Amerged\+merged%3A2026-10-01..2026-10-31\+-author%3Aapp%2Frenovate\+-author%3Aapp%2Fdependabot"/,
     'each repository links to its merged pull requests for the period',
   );
-  assert.match(html, /<span class="issue-label">Closed<\/span>\s*<span class="tile-value">118/);
-  assert.match(html, /<span class="issue-label">Opened<\/span>\s*<span class="tile-value">104/);
+  assert.match(html, /<span class="issue-label"><svg class="octicon[^>]*>.*?<\/svg>Closed<\/span>\s*<span class="tile-value">118/);
+  assert.match(html, /<span class="issue-label"><svg class="octicon[^>]*>.*?<\/svg>Opened<\/span>\s*<span class="tile-value">104/);
   assert.match(html, /issues\?q=is%3Aissue\+created%3A2026-10-01..2026-10-31/);
   assert.doesNotMatch(html, /Contributors|Projects shipped/);
   const report = clone();
@@ -67,7 +67,7 @@ test('stats show merged pull requests per repository and no removed metrics', ()
 });
 
 test('highlights are bullet points, and long ones warn', () => {
-  assert.match(renderReport(example), /<ul class="summary"><li>/);
+  assert.match(renderReport(example), /<ul class="summary"><li><span class="hl-mark hl-0"/);
   const report = clone();
   report.summary = Array(6).fill('x'.repeat(200));
   const { errors, warnings } = validateReport(report);
@@ -160,12 +160,31 @@ test('ongoing items show figures and breakdowns for the period', () => {
   assert.ok(errors.includes('ongoing[1].breakdowns[0].entries must be a non-empty array of { label, value }'));
 });
 
+test('items can have short points and a next step', () => {
+  const report = clone();
+  report.inProgress[0].points = ['Gift cards', '**Account following**'];
+  report.inProgress[0].upNext = 'Prepaid payment methods';
+  report.inProgress[0].summary = 'x'.repeat(170);
+  const { errors, warnings } = validateReport(report);
+  assert.deepEqual(errors, []);
+  assert.ok(warnings.some(w => w.includes('inProgress[0].summary is 170 characters')));
+  const html = renderReport(report);
+  assert.match(html, /<ul class="points"><li>Gift cards<\/li><li><strong>Account following<\/strong><\/li><\/ul>/);
+  assert.match(html, /<p class="up-next"><span class="up-next-label">Next<\/span><span>Prepaid payment methods<\/span><\/p>/);
+  report.inProgress[0].points = [];
+  assert.ok(validateReport(report).errors.includes('inProgress[0].points must be a non-empty array of short strings'));
+});
+
 test('misc entries are grouped by topic, all or none', () => {
   const html = renderReport(example);
   assert.match(html, /<h3>Expenses<span class="count">2<\/span><\/h3>/);
   const report = clone();
   delete report.misc[0].topic;
   assert.ok(validateReport(report).errors.includes('misc entries must all have a topic, or none'));
+});
+
+test('**keywords** become bold, after escaping', () => {
+  assert.equal(richText('**New pricing** & <b>tips</b>'), '<strong>New pricing</strong> &amp; &lt;b&gt;tips&lt;/b&gt;');
 });
 
 test('GitHub handles link to profiles', () => {

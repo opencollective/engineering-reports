@@ -219,19 +219,28 @@
       "title": "Fix currency rounding on multi-currency expense items",
       "url": "https://github.com/opencollective/opencollective-api/pull/12390",
       "kind": "fix",
-      "topic": "Expenses"
+      "topic": "Expenses",
+      "people": [
+        "kewitz"
+      ]
     },
     {
       "title": "Fix crash when searching with special characters",
       "url": "https://github.com/opencollective/opencollective-frontend/pull/11802",
       "kind": "fix",
-      "topic": "Search"
+      "topic": "Search",
+      "people": [
+        "Betree"
+      ]
     },
     {
       "title": "Show the payout method on expense receipts",
       "url": "https://github.com/opencollective/opencollective-frontend/pull/11790",
       "kind": "improvement",
-      "topic": "Expenses"
+      "topic": "Expenses",
+      "people": [
+        "znarf"
+      ]
     }
   ]
 }
