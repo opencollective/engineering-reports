@@ -1,21 +1,53 @@
 {
-  "period": { "label": "October 2026", "start": "2026-10-01", "end": "2026-10-31" },
+  "period": {
+    "label": "October 2026",
+    "start": "2026-10-01",
+    "end": "2026-10-31"
+  },
   "generatedOn": "2026-11-03",
   "scope": {
     "inProgress": true,
     "offBoard": true,
-    "repos": ["opencollective/opencollective-api", "opencollective/opencollective-frontend"]
+    "repos": [
+      "opencollective/opencollective-api",
+      "opencollective/opencollective-frontend"
+    ]
   },
   "summary": [
-    "Illustrative example: October focused on tax compliance and payouts. Hosts can now collect tax information once and reuse it across expenses, and PayPal payouts no longer need a manual reconnect when a token expires.",
-    "Behind the scenes, the team finished moving payout reconciliation to the new ledger and cut test suite time by a third (opencollective/opencollective#8123)."
+    "Illustrative example: hosts collect tax information once and reuse it across expenses.",
+    "PayPal payouts no longer need a manual reconnect when a token expires.",
+    "Test suite time cut by a third (opencollective/opencollective#8123)."
   ],
   "metrics": {
     "previousLabel": "September 2026",
-    "shippedPrevious": 4,
-    "prsMerged": { "value": 135, "previous": 118 },
-    "issuesClosed": { "value": 118, "previous": 97 },
-    "contributors": { "value": 6, "previous": 6 }
+    "prsMerged": {
+      "byRepo": [
+        {
+          "repo": "opencollective/opencollective-api",
+          "value": 70,
+          "previous": 61
+        },
+        {
+          "repo": "opencollective/opencollective-frontend",
+          "value": 55,
+          "previous": 49
+        },
+        {
+          "repo": "opencollective/opencollective-pdf",
+          "value": 6,
+          "previous": 4
+        },
+        {
+          "repo": "opencollective/opencollective-rest",
+          "value": 4,
+          "previous": 4
+        }
+      ]
+    },
+    "issuesClosed": {
+      "value": 118,
+      "previous": 97
+    }
   },
   "shipped": [
     {
@@ -25,9 +57,14 @@
       "summary": "Payees fill in their tax form once; hosts see the stored information on every later expense.",
       "start": "2026-09-08",
       "end": "2026-10-30",
-      "subIssues": { "done": 5, "total": 5 },
+      "subIssues": {
+        "done": 5,
+        "total": 5
+      },
       "prs": 14,
-      "people": ["kewitz"]
+      "people": [
+        "kewitz"
+      ]
     },
     {
       "title": "Automatic PayPal token refresh for payouts",
@@ -37,7 +74,9 @@
       "start": "2026-10-02",
       "end": "2026-10-21",
       "prs": 6,
-      "people": ["Betree"]
+      "people": [
+        "Betree"
+      ]
     },
     {
       "title": "Expense list filters remember their state",
@@ -47,7 +86,9 @@
       "start": "2026-10-06",
       "end": "2026-10-14",
       "prs": 3,
-      "people": ["Betree"]
+      "people": [
+        "Betree"
+      ]
     },
     {
       "title": "Faster test suite",
@@ -57,7 +98,9 @@
       "start": "2026-10-01",
       "end": "2026-10-17",
       "prs": 4,
-      "people": ["znarf"]
+      "people": [
+        "znarf"
+      ]
     },
     {
       "title": "Security fixes",
@@ -74,16 +117,61 @@
       "area": "Platform maintenance",
       "summary": "Moving payout reconciliation to the new ledger so balances match processor reports.",
       "start": "2026-08-18",
-      "subIssues": { "done": 4, "total": 7 },
+      "subIssues": {
+        "done": 4,
+        "total": 7
+      },
       "prs": 9,
-      "people": ["znarf", "kewitz"]
+      "people": [
+        "znarf",
+        "kewitz"
+      ]
+    },
+    {
+      "title": "Faster expense list",
+      "url": "https://github.com/opencollective/opencollective/issues/8060",
+      "area": "Improvements",
+      "summary": "Loading the host expense list in one query instead of one per expense, started by @kewitz.",
+      "start": "2026-10-20",
+      "subIssues": {
+        "done": 1,
+        "total": 3
+      },
+      "prs": 2,
+      "people": [
+        "kewitz"
+      ]
+    }
+  ],
+  "ongoing": [
+    {
+      "title": "Servers and dependencies up to date",
+      "url": "https://github.com/opencollective/opencollective/issues/7950",
+      "area": "Platform maintenance",
+      "summary": "Keeping servers, runtimes and dependencies current.",
+      "prs": 5,
+      "people": [
+        "znarf"
+      ],
+      "done": [
+        {
+          "title": "Tests run on PostgreSQL 16, like production",
+          "links": [
+            "https://github.com/opencollective/opencollective-api/pull/12284",
+            "https://github.com/opencollective/opencollective-frontend/pull/12526"
+          ]
+        },
+        {
+          "title": "PDF service moved to Node.js 24",
+          "url": "https://github.com/opencollective/opencollective-pdf/pull/1283"
+        }
+      ]
     },
     {
       "title": "Security report handling",
       "url": "https://github.com/opencollective/opencollective/issues/7900",
       "area": "Security",
-      "summary": "Triage and response for reports from the security program.",
-      "start": "2025-01-06"
+      "summary": "Triage and response for reports from the security program; details stay private."
     }
   ],
   "next": [
@@ -98,17 +186,20 @@
     {
       "title": "Fix currency rounding on multi-currency expense items",
       "url": "https://github.com/opencollective/opencollective-api/pull/12390",
-      "kind": "fix"
+      "kind": "fix",
+      "topic": "Expenses"
     },
     {
       "title": "Fix crash when searching with special characters",
       "url": "https://github.com/opencollective/opencollective-frontend/pull/11802",
-      "kind": "fix"
+      "kind": "fix",
+      "topic": "Search"
     },
     {
       "title": "Show the payout method on expense receipts",
       "url": "https://github.com/opencollective/opencollective-frontend/pull/11790",
-      "kind": "improvement"
+      "kind": "improvement",
+      "topic": "Expenses"
     }
   ]
 }

@@ -6,9 +6,9 @@ This repository holds both the reports and the tooling that produces them:
 
 | Path | What it is |
 |---|---|
-| `reports/<YYYY-MM>/report.json` | One report per period: the content only. |
+| `reports/<YYYY-MM>/report.json` | One report per period: the content only, with screenshots it uses in `images/` beside it. |
 | `.agents/skills/oc-engineering-board/` | The agent skill that maintains the board and writes reports (`SKILL.md`, `references/report.md`). |
-| `.agents/skills/oc-engineering-board/scripts/build-report.mjs` | Validates a `report.json` and renders it into one self-contained HTML page. |
+| `.agents/skills/oc-engineering-board/scripts/build-report.mjs` | Validates a `report.json` and renders it into one self-contained HTML page (screenshots inlined). |
 | `.agents/skills/oc-engineering-board/assets/report/` | Shared design (`style.css`) and a complete example (`example.json`). |
 | `scripts/build-site.mjs` | Builds the GitHub Pages site: every non-draft report plus an index. |
 
