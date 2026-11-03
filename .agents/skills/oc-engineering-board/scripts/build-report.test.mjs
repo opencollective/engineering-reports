@@ -85,10 +85,10 @@ test('the closed issues breakdown is optional and must add up', () => {
 test('highlights are bullet points, and long ones warn', () => {
   assert.match(renderReport(example), /<ul class="summary"><li><span class="hl-mark hl-0"/);
   const report = clone();
-  report.summary = Array(9).fill('x'.repeat(200));
+  report.summary = Array(10).fill('x'.repeat(200));
   const { errors, warnings } = validateReport(report);
   assert.deepEqual(errors, []);
-  assert.ok(warnings.some(w => w.includes('9 bullets')));
+  assert.ok(warnings.some(w => w.includes('10 bullets')));
   assert.ok(warnings.some(w => w.includes('summary[0] is 200 characters')));
 });
 

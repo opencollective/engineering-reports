@@ -22,6 +22,7 @@
     "More **unused features** were retired after notice, keeping the platform **simpler and safer to change**.",
     "**Better monitoring**, so we spot problems before users report them.",
     "Progress on **translations**: automated **French and German** translations, with style guides to keep them consistent.",
+    "We fixed **24 bugs** and made **12 smaller improvements** across expenses and payouts, contributions, the dashboard, tax forms, accounts and hosting.",
     "**Security**: we triaged **294 reports**, deployed **16 fixes**, and are automating how new reports are handled."
   ],
   "metrics": {
