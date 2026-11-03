@@ -1078,10 +1078,10 @@ a.tag:hover {
   font-weight: 600;
 }
 
-/* Subgrid keeps the kind badges and repository tags aligned within a group. */
+/* Subgrid keeps the titles, kind badges and repository tags aligned within a group. */
 .misc-group ul {
   display: grid;
-  grid-template-columns: max-content minmax(0, 1fr) max-content max-content;
+  grid-template-columns: minmax(0, 1fr) max-content max-content max-content;
   column-gap: 10px;
   margin: 0;
   padding: 0;
@@ -1100,6 +1100,7 @@ a.tag:hover {
   border-top: 1px solid var(--border);
 }
 
+.misc-item .kind,
 .misc-item .tag {
   justify-self: end;
 }
@@ -1188,10 +1189,19 @@ a.tag:hover {
     columns: 1;
   }
   .misc-group ul {
-    grid-template-columns: minmax(0, 1fr) max-content max-content;
+    display: block;
   }
-  .misc-item .kind {
-    grid-column: 1 / -1;
+  .misc-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+  }
+  .misc-title {
+    flex-basis: 100%;
+  }
+  .misc-item .tag {
+    margin-left: auto;
   }
   .row {
     grid-template-columns: minmax(0, 1fr);

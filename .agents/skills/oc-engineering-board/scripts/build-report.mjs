@@ -911,7 +911,7 @@ function renderOngoing(context, report) {
   </section>`;
 }
 
-// Misc entries are grouped by topic when topics are set, with a kind badge and repository tag on each line.
+// Misc entries are grouped by topic when topics are set: title first, then the kind badge, people and repository tag.
 function renderMisc(context, report) {
   const kinds = MISC_KINDS.map(([kind, , label]) => ({ key: kind, label, count: report.misc.filter(entry => entry.kind === kind).length })).filter(
     option => option.count,
@@ -921,7 +921,7 @@ function renderMisc(context, report) {
     const kindLabel = MISC_KINDS.find(([kind]) => kind === entry.kind)[1];
     const title = entry.url ? `<a href="${escapeHtml(entry.url)}">${escapeHtml(entry.title)}</a>` : escapeHtml(entry.title);
     const repo = repoFromUrl(entry.url);
-    return `<li class="misc-item" data-filter="${entry.kind}"><span class="kind kind-${entry.kind}">${kindLabel}</span><span class="misc-title">${title}</span><span class="misc-people">${peopleList(entry.people) ?? ''}</span>${repo ? `<span class="tag">${escapeHtml(repoLabel(repo))}</span>` : '<span></span>'}</li>`;
+    return `<li class="misc-item" data-filter="${entry.kind}"><span class="misc-title">${title}</span><span class="kind kind-${entry.kind}">${kindLabel}</span><span class="misc-people">${peopleList(entry.people) ?? ''}</span>${repo ? `<span class="tag">${escapeHtml(repoLabel(repo))}</span>` : '<span></span>'}</li>`;
   };
   const byKind = (a, b) => MISC_KINDS.findIndex(([k]) => k === a.kind) - MISC_KINDS.findIndex(([k]) => k === b.kind);
   const topics = miscTopics(report);
