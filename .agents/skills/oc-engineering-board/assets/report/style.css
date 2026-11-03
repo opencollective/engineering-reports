@@ -1078,31 +1078,31 @@ a.tag:hover {
   font-weight: 600;
 }
 
-/* Subgrid keeps the titles, kind badges and repository tags aligned within a group. */
+/* Each line: the title on its own row, then the kind badge, people and repository tag below it. */
 .misc-group ul {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) max-content max-content max-content;
-  column-gap: 10px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
 .misc-item {
-  display: grid;
-  grid-column: 1 / -1;
-  grid-template-columns: subgrid;
-  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
   padding: 6px 0;
+}
+
+.misc-title {
+  flex-basis: 100%;
 }
 
 .misc-item + .misc-item {
   border-top: 1px solid var(--border);
 }
 
-.misc-item .kind,
 .misc-item .tag {
-  justify-self: end;
+  margin-left: auto;
 }
 
 .misc-people {
@@ -1122,7 +1122,6 @@ a.tag:hover {
 }
 
 .kind {
-  justify-self: start;
   padding: 0 7px;
   border-radius: 999px;
   font-size: 11px;
@@ -1187,21 +1186,6 @@ a.tag:hover {
   }
   .misc {
     columns: 1;
-  }
-  .misc-group ul {
-    display: block;
-  }
-  .misc-item {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 4px 8px;
-  }
-  .misc-title {
-    flex-basis: 100%;
-  }
-  .misc-item .tag {
-    margin-left: auto;
   }
   .row {
     grid-template-columns: minmax(0, 1fr);

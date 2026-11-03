@@ -911,7 +911,7 @@ function renderOngoing(context, report) {
   </section>`;
 }
 
-// Misc entries are grouped by topic when topics are set: title first, then the kind badge, people and repository tag.
+// Misc entries are grouped by topic when topics are set: the title, then a line with the kind badge, people and repository tag.
 function renderMisc(context, report) {
   const kinds = MISC_KINDS.map(([kind, , label]) => ({ key: kind, label, count: report.misc.filter(entry => entry.kind === kind).length })).filter(
     option => option.count,
