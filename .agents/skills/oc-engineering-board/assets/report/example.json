@@ -48,12 +48,15 @@
       "repo": "opencollective/opencollective",
       "closed": {
         "value": 118,
-        "previous": 97
+        "previous": 97,
+        "completed": 96,
+        "notPlanned": 22
       },
       "opened": {
         "value": 104,
         "previous": 88
-      }
+      },
+      "note": "We started automating part of **issue triage**, which closed older issues that were already fixed, out of scope or duplicates."
     }
   },
   "shipped": [

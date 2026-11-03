@@ -397,6 +397,21 @@ h1 {
   font-size: 13px;
 }
 
+.issue-breakdown,
+.issue-note {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
+.issue-breakdown a {
+  color: inherit;
+}
+
+.issue-breakdown strong {
+  color: var(--ink);
+}
+
 /* Per-repository bars in the pull request tile */
 
 .bars {

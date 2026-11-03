@@ -58,13 +58,16 @@
     "issues": {
       "repo": "opencollective/opencollective",
       "closed": {
-        "value": 118,
-        "previous": 13
+        "value": 156,
+        "previous": 19,
+        "completed": 118,
+        "notPlanned": 38
       },
       "opened": {
         "value": 115,
         "previous": 20
-      }
+      },
+      "note": "In October we started automating part of **issue triage**, which closed many older issues that were already fixed, out of scope or duplicates."
     }
   },
   "shipped": [

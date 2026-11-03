@@ -164,6 +164,17 @@ export function validateReport(report, { baseDir } = {}) {
           checkPrevious(issues[key], `metrics.issues.${key}`);
         }
       }
+      const closed = issues.closed;
+      if (isObject(closed) && (closed.completed !== undefined || closed.notPlanned !== undefined)) {
+        if (!isCount(closed.completed) || !isCount(closed.notPlanned)) {
+          errors.push('metrics.issues.closed.completed and .notPlanned must both be non-negative integers');
+        } else if (isCount(closed.value) && closed.completed + closed.notPlanned !== closed.value) {
+          errors.push('metrics.issues.closed.completed + .notPlanned must equal metrics.issues.closed.value');
+        }
+      }
+      if (issues.note !== undefined) {
+        requireString(issues.note, 'metrics.issues.note');
+      }
     }
     for (const removed of ['contributors', 'shippedPrevious', 'issuesClosed']) {
       if (metrics[removed] !== undefined) {
@@ -695,26 +706,31 @@ function shortMonth(label) {
   return month ?? label;
 }
 
-// Issues closed as completed and issues opened in the tracker, each against the previous period.
+// Issues closed (all reasons) and issues opened in the tracker, each against the previous period,
+// then how the closed ones were closed (resolved, or not planned and duplicates) and an optional note.
 function renderIssuesTile(report) {
   const { metrics, period } = report;
-  const { repo } = metrics.issues;
+  const { repo, closed, opened, note } = metrics.issues;
+  const range = `${period.start}..${period.end}`;
   const stat = (label, icon, metric, query) => `
         <a class="issue-stat" href="${escapeHtml(searchUrl(repo, 'issues', query))}">
           <span class="issue-label">${octicon(icon, `octicon-${icon === 'issueOpened' ? 'open' : 'done'}`)}${label}</span>
           <span class="tile-value">${metric.value.toLocaleString('en-US')}${deltaBadge(metric.value, metric.previous, metrics.previousLabel)}</span>
           ${metric.previous === undefined ? '' : `<span class="tile-previous" title="${metric.previous.toLocaleString('en-US')} in ${escapeHtml(metrics.previousLabel)}">${metric.previous.toLocaleString('en-US')} in ${escapeHtml(shortMonth(metrics.previousLabel))}</span>`}
         </a>`;
+  const reason = (value, label, query) =>
+    `<a href="${escapeHtml(searchUrl(repo, 'issues', `is:issue closed:${range} ${query}`))}"><strong>${value.toLocaleString('en-US')}</strong> ${label}</a>`;
+  const breakdown =
+    closed.completed === undefined
+      ? ''
+      : `
+      <p class="issue-breakdown">Closed as ${reason(closed.completed, 'resolved', 'reason:completed')} · ${reason(closed.notPlanned, 'not planned or duplicate', '-reason:completed')}</p>`;
   return `
     <div class="tile">
       <p class="tile-label">${octicon('issueOpened', 'octicon-neutral')}Issues<a class="tile-repo" href="https://github.com/${escapeHtml(repo)}/issues">${escapeHtml(repo)}</a></p>
-      <div class="issue-stats">${stat('Closed', 'issueClosed', metrics.issues.closed, `is:issue reason:completed closed:${period.start}..${period.end}`)}${stat(
-        'Opened',
-        'issueOpened',
-        metrics.issues.opened,
-        `is:issue created:${period.start}..${period.end}`,
-      )}
-      </div>
+      <div class="issue-stats">${stat('Closed', 'issueClosed', closed, `is:issue closed:${range}`)}${stat('Opened', 'issueOpened', opened, `is:issue created:${range}`)}
+      </div>${breakdown}${note ? `
+      <p class="issue-note">${richText(note)}</p>` : ''}
     </div>`;
 }
 
