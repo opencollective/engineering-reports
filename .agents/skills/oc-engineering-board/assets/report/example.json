@@ -1,0 +1,114 @@
+{
+  "period": { "label": "October 2026", "start": "2026-10-01", "end": "2026-10-31" },
+  "generatedOn": "2026-11-03",
+  "scope": {
+    "inProgress": true,
+    "offBoard": true,
+    "repos": ["opencollective/opencollective-api", "opencollective/opencollective-frontend"]
+  },
+  "summary": [
+    "Illustrative example: October focused on tax compliance and payouts. Hosts can now collect tax information once and reuse it across expenses, and PayPal payouts no longer need a manual reconnect when a token expires.",
+    "Behind the scenes, the team finished moving payout reconciliation to the new ledger and cut test suite time by a third (opencollective/opencollective#8123)."
+  ],
+  "metrics": {
+    "previousLabel": "September 2026",
+    "shippedPrevious": 4,
+    "prsMerged": { "value": 135, "previous": 118 },
+    "issuesClosed": { "value": 118, "previous": 97 },
+    "contributors": { "value": 6, "previous": 6 }
+  },
+  "shipped": [
+    {
+      "title": "Reuse submitted tax information across expenses",
+      "url": "https://github.com/opencollective/opencollective/issues/8101",
+      "area": "Compliance",
+      "summary": "Payees fill in their tax form once; hosts see the stored information on every later expense.",
+      "start": "2026-09-08",
+      "end": "2026-10-30",
+      "subIssues": { "done": 5, "total": 5 },
+      "prs": 14,
+      "people": ["kewitz"]
+    },
+    {
+      "title": "Automatic PayPal token refresh for payouts",
+      "url": "https://github.com/opencollective/opencollective/issues/8110",
+      "area": "Payment processors",
+      "summary": "Expired PayPal connections refresh on their own, so hosts no longer reconnect before paying expenses.",
+      "start": "2026-10-02",
+      "end": "2026-10-21",
+      "prs": 6,
+      "people": ["Betree"]
+    },
+    {
+      "title": "Expense list filters remember their state",
+      "url": "https://github.com/opencollective/opencollective/issues/8098",
+      "area": "Improvements",
+      "summary": "Filters on the host expense list persist when moving between pages.",
+      "start": "2026-10-06",
+      "end": "2026-10-14",
+      "prs": 3,
+      "people": ["Betree"]
+    },
+    {
+      "title": "Faster test suite",
+      "url": "https://github.com/opencollective/opencollective/issues/8123",
+      "area": "Testing & CI",
+      "summary": "API tests run in parallel shards, bringing CI from 24 to 16 minutes.",
+      "start": "2026-10-01",
+      "end": "2026-10-17",
+      "prs": 4,
+      "people": ["znarf"]
+    },
+    {
+      "title": "Security fixes",
+      "url": "https://github.com/opencollective/opencollective/issues/8130",
+      "area": "Security",
+      "summary": "Fixes for issues reported through the security program, deployed in October.",
+      "end": "2026-10-28"
+    }
+  ],
+  "inProgress": [
+    {
+      "title": "Ledger-based payout reconciliation",
+      "url": "https://github.com/opencollective/opencollective/issues/8050",
+      "area": "Platform maintenance",
+      "summary": "Moving payout reconciliation to the new ledger so balances match processor reports.",
+      "start": "2026-08-18",
+      "subIssues": { "done": 4, "total": 7 },
+      "prs": 9,
+      "people": ["znarf", "kewitz"]
+    },
+    {
+      "title": "Security report handling",
+      "url": "https://github.com/opencollective/opencollective/issues/7900",
+      "area": "Security",
+      "summary": "Triage and response for reports from the security program.",
+      "start": "2025-01-06"
+    }
+  ],
+  "next": [
+    {
+      "title": "Grant applications with custom forms",
+      "url": "https://github.com/opencollective/opencollective/issues/8140",
+      "area": "Improvements",
+      "summary": "Let fund managers define the questions applicants answer."
+    }
+  ],
+  "misc": [
+    {
+      "title": "Fix currency rounding on multi-currency expense items",
+      "url": "https://github.com/opencollective/opencollective-api/pull/12390",
+      "kind": "fix"
+    },
+    {
+      "title": "Fix crash when searching with special characters",
+      "url": "https://github.com/opencollective/opencollective-frontend/pull/11802",
+      "kind": "fix"
+    },
+    {
+      "title": "Show the payout method on expense receipts",
+      "url": "https://github.com/opencollective/opencollective-frontend/pull/11790",
+      "kind": "improvement"
+    }
+  ]
+}

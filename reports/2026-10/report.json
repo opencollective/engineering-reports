@@ -1,0 +1,471 @@
+{
+  "draft": true,
+  "period": {
+    "label": "October 2026",
+    "start": "2026-10-01",
+    "end": "2026-10-31"
+  },
+  "generatedOn": "2026-11-03",
+  "scope": {
+    "inProgress": true,
+    "offBoard": true,
+    "repos": [
+      "opencollective/opencollective-api",
+      "opencollective/opencollective-frontend"
+    ]
+  },
+  "summary": [
+    "October was about finishing work for hosts and simplifying the platform. The new pricing and platform tips reached every host, large CSV exports now run in the background for everyone, host admins got a full view of each hosted collective in their dashboard, and hosts can set their own expected dates for Expected Funds. Payouts got sturdier too: the Wise integration was hardened and PayPal recurring contributions are now reconciled every week.",
+    "Behind the scenes, the team removed unused features after notice (gift cards, account following, in-app surveys), converted most of the remaining API JavaScript to TypeScript, moved more screens off the legacy GraphQL v1 API, and started replacing the end-to-end test suite with faster, independent Playwright tests. A batch of security fixes was deployed, along with improvements to tax forms and the Open Source Collective application flow."
+  ],
+  "metrics": {
+    "previousLabel": "September 2026",
+    "prsMerged": {
+      "value": 144,
+      "previous": 128
+    },
+    "issuesClosed": {
+      "value": 118
+    },
+    "contributors": {
+      "value": 4,
+      "previous": 6
+    }
+  },
+  "shipped": [
+    {
+      "title": "New pricing and platform tips",
+      "url": "https://github.com/opencollective/opencollective/issues/9008",
+      "area": "Improvements",
+      "summary": "The new platform pricing is on by default for every host. The crowdfunding fee now appears on the monthly platform bill, Open Source Collective uses the default platform tip behaviour, and organizations with no activity are no longer billed.",
+      "start": "2026-09-01",
+      "end": "2026-10-16",
+      "prs": 3,
+      "people": [
+        "znarf"
+      ]
+    },
+    {
+      "title": "Expected funds improvements for hosts",
+      "url": "https://github.com/opencollective/opencollective/issues/9007",
+      "area": "Bug fixes",
+      "summary": "Hosts can pick a custom expected date for Expected Funds, stop getting reminders for funds they recorded themselves, and the notification email now says the date is approximate.",
+      "start": "2026-09-22",
+      "end": "2026-10-14",
+      "prs": 2,
+      "people": [
+        "kewitz"
+      ]
+    },
+    {
+      "title": "Host dashboard profile for hosted collectives",
+      "url": "https://github.com/opencollective/opencollective/issues/8824",
+      "area": "Bug fixes",
+      "summary": "Host admins can open any hosted collective from their dashboard and see its finances, accounts, transactions, expected funds, agreements and activity, even when the collective has no public page.",
+      "start": "2026-10-07",
+      "end": "2026-10-13",
+      "subIssues": {
+        "done": 8,
+        "total": 8
+      }
+    },
+    {
+      "title": "Asynchronous exports released to everyone",
+      "url": "https://github.com/opencollective/opencollective/issues/8990",
+      "area": "Technical debt",
+      "summary": "Large CSV exports run in the background and send a download link when ready, instead of timing out. Duplicate export runs were fixed before the release to all users.",
+      "start": "2026-01-20",
+      "end": "2026-10-21",
+      "subIssues": {
+        "done": 1,
+        "total": 1
+      },
+      "prs": 2,
+      "people": [
+        "kewitz"
+      ]
+    },
+    {
+      "title": "Wise integration hardened",
+      "url": "https://github.com/opencollective/opencollective/issues/8981",
+      "area": "Payment processors",
+      "summary": "Fewer stuck or failed Wise payouts: more reliable handling of Wise identifiers and webhooks, safer batch payments, and clearer errors when a connection expires.",
+      "start": "2026-09-04",
+      "end": "2026-10-05",
+      "prs": 2,
+      "people": [
+        "kewitz"
+      ]
+    },
+    {
+      "title": "Weekly reconciliation of stale PayPal subscriptions",
+      "url": "https://github.com/opencollective/opencollective/issues/8982",
+      "area": "Payment processors",
+      "summary": "A weekly check cancels PayPal recurring contributions that PayPal reports as cancelled or expired, so they stay in sync even when a cancellation notice is missed.",
+      "start": "2026-10-08",
+      "end": "2026-10-08",
+      "prs": 1,
+      "people": [
+        "Betree"
+      ]
+    },
+    {
+      "title": "PostgreSQL search alongside OpenSearch",
+      "url": "https://github.com/opencollective/opencollective/issues/8935",
+      "area": "Technical debt",
+      "summary": "Dashboard search can now run on PostgreSQL for accounts, expenses, transactions, contributions, updates, comments, tiers and host applications. It is in team preview as a simpler, cheaper alternative to OpenSearch.",
+      "start": "2026-10-06",
+      "end": "2026-10-30",
+      "subIssues": {
+        "done": 9,
+        "total": 9
+      },
+      "prs": 3,
+      "people": [
+        "Betree"
+      ]
+    },
+    {
+      "title": "Updated hyperwatch package",
+      "url": "https://github.com/opencollective/opencollective/issues/8976",
+      "area": "Reliability & monitoring",
+      "summary": "Updated the package the platform uses to monitor incoming traffic.",
+      "end": "2026-10-16"
+    }
+  ],
+  "inProgress": [
+    {
+      "title": "Expense flow fixes and improvements",
+      "url": "https://github.com/opencollective/opencollective/issues/9001",
+      "area": "Bug fixes",
+      "summary": "Fixes across submitting, editing, approving and paying expenses. October fixed recurring expense creation, comments on vendor expenses, payout method visibility for hosts and draft invitations; the remaining work covers expense invites and payout method performance.",
+      "start": "2026-09-09",
+      "subIssues": {
+        "done": 4,
+        "total": 8
+      },
+      "prs": 10,
+      "people": [
+        "Betree"
+      ]
+    },
+    {
+      "title": "Unused features removed, with notice",
+      "url": "https://github.com/opencollective/opencollective/issues/8987",
+      "area": "Technical debt",
+      "summary": "Removing features that are no longer used, after notice. Gift cards, account following, in-app surveys, the crowdfunding redesign preview and subscription quantities are gone; prepaid payment methods and the Payment Intents prototype are next.",
+      "start": "2026-09-24",
+      "subIssues": {
+        "done": 6,
+        "total": 9
+      },
+      "prs": 7,
+      "people": [
+        "Betree"
+      ]
+    },
+    {
+      "title": "Legacy JavaScript migrated to TypeScript",
+      "url": "https://github.com/opencollective/opencollective/issues/8988",
+      "area": "Technical debt",
+      "summary": "Converting the remaining JavaScript to TypeScript so type checks catch more bugs before they reach users. Most of the API, plus the images and REST services, are done; the frontend's foundational code is next.",
+      "subIssues": {
+        "done": 7,
+        "total": 8
+      },
+      "prs": 5,
+      "people": [
+        "Betree",
+        "kewitz"
+      ]
+    },
+    {
+      "title": "GraphQL v1 removed, API consolidated on v2",
+      "url": "https://github.com/opencollective/opencollective/issues/8989",
+      "area": "Technical debt",
+      "summary": "Moving every remaining use of the legacy GraphQL v1 API to v2. In October, archiving and deleting accounts moved to v2 and webhooks were fixed ahead of their migration.",
+      "start": "2025-12-03",
+      "subIssues": {
+        "done": 0,
+        "total": 4
+      },
+      "prs": 5,
+      "people": [
+        "znarf"
+      ]
+    },
+    {
+      "title": "Independent, reproducible Playwright end-to-end tests",
+      "url": "https://github.com/opencollective/opencollective/issues/8948",
+      "area": "Testing & CI",
+      "summary": "Replacing the Cypress end-to-end suite with independent, faster Playwright tests. Planning is done and the expense and vendor pilots have landed.",
+      "start": "2026-10-12",
+      "subIssues": {
+        "done": 10,
+        "total": 13
+      },
+      "prs": 2,
+      "people": [
+        "Betree"
+      ]
+    },
+    {
+      "title": "Servers and dependencies up to date",
+      "url": "https://github.com/opencollective/opencollective/issues/8984",
+      "area": "Platform maintenance",
+      "summary": "Keeping servers, runtimes and dependencies current, with test environments matching the production database and cache versions.",
+      "start": "2025-12-19",
+      "prs": 5,
+      "people": [
+        "znarf"
+      ]
+    },
+    {
+      "title": "Semi-automated dependency updates",
+      "url": "https://github.com/opencollective/opencollective/issues/8985",
+      "area": "Platform maintenance",
+      "summary": "Making dependency updates routine with a tuned shared Renovate configuration and regular batches of safe updates.",
+      "start": "2026-10-01",
+      "prs": 2,
+      "people": [
+        "znarf"
+      ]
+    },
+    {
+      "title": "Internationalization improvements",
+      "url": "https://github.com/opencollective/opencollective/issues/9026",
+      "area": "Improvements",
+      "summary": "Making Open Collective speak the user's language beyond the website: remembering each user's language, sending emails in it, and consistent translation style guides. The automatic French and German translation workflow and the German style guide are done.",
+      "subIssues": {
+        "done": 2,
+        "total": 8
+      }
+    },
+    {
+      "title": "Connect services to Sentry",
+      "url": "https://github.com/opencollective/opencollective/issues/8977",
+      "area": "Reliability & monitoring",
+      "summary": "Error monitoring for every service, so problems are spotted before users report them. The PDF service is connected; the REST and images services are next.",
+      "subIssues": {
+        "done": 1,
+        "total": 3
+      }
+    },
+    {
+      "title": "Isolated environments for agent work",
+      "url": "https://github.com/opencollective/opencollective/issues/8997",
+      "area": "Developer experience",
+      "summary": "Isolated virtual machines for AI coding agents, so they can work on the code without access to the host machine or production credentials.",
+      "start": "2026-10-05"
+    },
+    {
+      "title": "Review security tickets",
+      "url": "https://github.com/opencollective/opencollective/issues/8994",
+      "area": "Security",
+      "summary": "Ongoing triage of and response to reports from the security program.",
+      "start": "2026-10-02",
+      "subIssues": {
+        "done": 5,
+        "total": 6
+      }
+    },
+    {
+      "title": "Automated workflow for security reports",
+      "url": "https://github.com/opencollective/opencollective/issues/8975",
+      "area": "Security",
+      "summary": "A more automated process for receiving and triaging security reports.",
+      "start": "2026-10-01",
+      "subIssues": {
+        "done": 0,
+        "total": 1
+      }
+    }
+  ],
+  "next": [],
+  "misc": [
+    {
+      "title": "Security fixes",
+      "kind": "fix"
+    },
+    {
+      "title": "Tax form thresholds are evaluated per calendar year",
+      "url": "https://github.com/opencollective/opencollective-api/pull/12398",
+      "kind": "fix"
+    },
+    {
+      "title": "Fix webhooks for host application activities: delivered to the host, with a full payload",
+      "url": "https://github.com/opencollective/opencollective-api/pull/12052",
+      "kind": "fix"
+    },
+    {
+      "title": "Fixed-interval tiers keep their frequency in the contribution flow",
+      "url": "https://github.com/opencollective/opencollective-api/pull/12237",
+      "kind": "fix"
+    },
+    {
+      "title": "Tier minimum amounts are enforced for every way of creating a contribution",
+      "url": "https://github.com/opencollective/opencollective-api/pull/12336",
+      "kind": "fix"
+    },
+    {
+      "title": "Archived accounts can no longer be converted to organizations",
+      "url": "https://github.com/opencollective/opencollective-api/pull/12315",
+      "kind": "fix"
+    },
+    {
+      "title": "Fix pending contribution contacts for incognito contributors",
+      "url": "https://github.com/opencollective/opencollective-api/pull/12330",
+      "kind": "fix"
+    },
+    {
+      "title": "Hosts see contributor location and private info on contributions being processed",
+      "url": "https://github.com/opencollective/opencollective-api/pull/12404",
+      "kind": "fix"
+    },
+    {
+      "title": "Wise payment checks tolerate rounding differences",
+      "url": "https://github.com/opencollective/opencollective-api/pull/12401",
+      "kind": "fix"
+    },
+    {
+      "title": "Sign-up recovers from an expired verification code session",
+      "url": "https://github.com/opencollective/opencollective-frontend/pull/12608",
+      "kind": "fix"
+    },
+    {
+      "title": "Fix saving collective policies with empty values",
+      "url": "https://github.com/opencollective/opencollective-api/pull/12268",
+      "kind": "fix"
+    },
+    {
+      "title": "Tag removal shows a positive count",
+      "url": "https://github.com/opencollective/opencollective-api/pull/12364",
+      "kind": "fix"
+    },
+    {
+      "title": "Fix the account switcher for events and the redirect after creating an event",
+      "url": "https://github.com/opencollective/opencollective-frontend/pull/12463",
+      "kind": "fix"
+    },
+    {
+      "title": "Off-platform transactions open the matching expense or contribution",
+      "url": "https://github.com/opencollective/opencollective-frontend/pull/12472",
+      "kind": "fix"
+    },
+    {
+      "title": "Consistent dashboard access for accountants",
+      "url": "https://github.com/opencollective/opencollective-frontend/pull/12498",
+      "kind": "fix"
+    },
+    {
+      "title": "\"Use all\" in internal transfers keeps the currency",
+      "url": "https://github.com/opencollective/opencollective-frontend/pull/12501",
+      "kind": "fix"
+    },
+    {
+      "title": "Fix PDF previews",
+      "url": "https://github.com/opencollective/opencollective-frontend/pull/12558",
+      "kind": "fix"
+    },
+    {
+      "title": "Expense descriptions are length-checked before submission",
+      "url": "https://github.com/opencollective/opencollective-frontend/pull/12513",
+      "kind": "fix"
+    },
+    {
+      "title": "Fix crashes when editing expenses",
+      "url": "https://github.com/opencollective/opencollective-frontend/pull/12582",
+      "kind": "fix"
+    },
+    {
+      "title": "Fix a crash in the platform billing payments section",
+      "url": "https://github.com/opencollective/opencollective-frontend/pull/12583",
+      "kind": "fix"
+    },
+    {
+      "title": "Fix a crash on reports with no data",
+      "url": "https://github.com/opencollective/opencollective-frontend/pull/12584",
+      "kind": "fix"
+    },
+    {
+      "title": "Fix duplicate guest accounts created by simultaneous contributions",
+      "url": "https://github.com/opencollective/opencollective-api/pull/12270",
+      "kind": "fix"
+    },
+    {
+      "title": "Validate the currency in the expense amount filter",
+      "url": "https://github.com/opencollective/opencollective-api/pull/12277",
+      "kind": "fix"
+    },
+    {
+      "title": "Fix transaction details for contributions without a status",
+      "url": "https://github.com/opencollective/opencollective-api/pull/12206",
+      "kind": "fix"
+    },
+    {
+      "title": "Platform accounts are recognized by the GraphQL v1 API",
+      "url": "https://github.com/opencollective/opencollective-api/pull/12317",
+      "kind": "fix"
+    },
+    {
+      "title": "Modernized Open Source Collective application flow and review drawer",
+      "url": "https://github.com/opencollective/opencollective-frontend/pull/12615",
+      "kind": "improvement"
+    },
+    {
+      "title": "Expense security checks flag identity mismatches with tax forms",
+      "url": "https://github.com/opencollective/opencollective-frontend/pull/12628",
+      "kind": "improvement"
+    },
+    {
+      "title": "Account tax data backfilled from submitted tax forms",
+      "url": "https://github.com/opencollective/opencollective-api/pull/12405",
+      "kind": "improvement"
+    },
+    {
+      "title": "Updated tax form submission thresholds",
+      "url": "https://github.com/opencollective/opencollective-api/pull/12035",
+      "kind": "improvement"
+    },
+    {
+      "title": "Faster tax form lookups for hosts",
+      "url": "https://github.com/opencollective/opencollective-api/pull/12375",
+      "kind": "improvement"
+    },
+    {
+      "title": "Hosts choose which virtual card limit policies collectives can request",
+      "url": "https://github.com/opencollective/opencollective-frontend/pull/12591",
+      "kind": "improvement"
+    },
+    {
+      "title": "Projects can be merged into collectives with the same host",
+      "url": "https://github.com/opencollective/opencollective-api/pull/12318",
+      "kind": "improvement"
+    },
+    {
+      "title": "Preview CSV attachments in the expense file viewer",
+      "url": "https://github.com/opencollective/opencollective-frontend/pull/12614",
+      "kind": "improvement"
+    },
+    {
+      "title": "OAuth applications can use local loopback redirect URIs",
+      "url": "https://github.com/opencollective/opencollective-api/pull/12262",
+      "kind": "improvement"
+    },
+    {
+      "title": "Hosted collectives dashboard data fixes and unified account details view",
+      "url": "https://github.com/opencollective/opencollective-frontend/pull/12519",
+      "kind": "improvement"
+    },
+    {
+      "title": "Search ranks hosts by default and shows large result counts as lower bounds",
+      "url": "https://github.com/opencollective/opencollective-frontend/pull/12612",
+      "kind": "improvement"
+    },
+    {
+      "title": "Email footers name OFiTech as the platform operator",
+      "url": "https://github.com/opencollective/opencollective-api/pull/12275",
+      "kind": "improvement"
+    }
+  ]
+}

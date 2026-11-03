@@ -1,0 +1,14 @@
+{
+  "name": "engineering-reports",
+  "private": true,
+  "type": "module",
+  "description": "Engineering reports for Open Collective, built from the Engineering Board.",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test .agents/skills/oc-engineering-board/scripts/build-report.test.mjs",
+    "build": "node scripts/build-site.mjs",
+    "preview": "node scripts/build-site.mjs --drafts"
+  }
+}
