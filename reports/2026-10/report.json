@@ -15,10 +15,14 @@
     ]
   },
   "summary": [
+    "**Platform tips** got a better interface, and an **A/B test** of tips as the default on **Open Source Collective** is live.",
     "Large **CSV exports** now run in the background for everyone, instead of timing out.",
-    "Host admins get a full **dashboard view of each hosted collective**, even without a public page.",
-    "Sturdier **payouts**: the **Wise** integration was hardened and **PayPal** subscriptions are reconciled weekly.",
-    "**Unused features** were removed after notice, and more code moved to **TypeScript** and **GraphQL v2**."
+    "Host admins can open a full **dashboard view of each hosted collective**.",
+    "Sturdier **payouts**: fewer stuck or failed **Wise** payouts, and stale **PayPal** recurring contributions are cleaned up every week.",
+    "More **unused features** were retired after notice, keeping the platform **simpler and safer to change**.",
+    "**Better monitoring**, so we spot problems before users report them.",
+    "Progress on **translations**: automated **French and German** translations, with style guides to keep them consistent.",
+    "**Security**: we triaged **294 reports**, deployed **16 fixes**, and are automating how new reports are handled."
   ],
   "metrics": {
     "previousLabel": "September 2026",
@@ -65,10 +69,10 @@
   },
   "shipped": [
     {
-      "title": "Platform tips and billing",
+      "title": "Platform tips",
       "url": "https://github.com/opencollective/opencollective/issues/9008",
       "area": "Improvements",
-      "summary": "Updates to **platform tips** and the **monthly platform bill**.",
+      "summary": "Better **platform tips**, now tested as the **default on Open Source Collective**.",
       "start": "2026-09-01",
       "end": "2026-10-16",
       "prs": 3,
@@ -76,9 +80,8 @@
         "znarf"
       ],
       "points": [
-        "Crowdfunding fee shown on the monthly platform bill",
-        "Open Source Collective uses the default platform tip",
-        "Organizations with no activity are no longer billed"
+        "Platform tips UI and infrastructure improved",
+        "A/B test released: platform tips on by default for Open Source Collective"
       ]
     },
     {

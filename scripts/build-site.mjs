@@ -7,7 +7,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { escapeHtml, formatDate, renderReport, richText, validateReport } from '../.agents/skills/oc-engineering-board/scripts/build-report.mjs';
+import { escapeHtml, formatDate, renderHighlights, renderReport, validateReport } from '../.agents/skills/oc-engineering-board/scripts/build-report.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const REPORTS = join(ROOT, 'reports');
@@ -34,8 +34,8 @@ const INDEX_CSS = `
 .timeline-card { border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); padding: 18px 22px 16px; }
 .timeline-card h2 { margin: 0; font-size: 18px; line-height: 1.3; font-weight: 650; }
 .timeline-card h2 a { color: var(--ink); }
-.timeline-summary { margin: 8px 0 0; font-size: 15px; line-height: 1.55; color: var(--ink-2); }
-.timeline-summary strong { font-weight: 650; color: var(--ink); }
+.timeline-summary { margin: 14px 0 0; padding: 0; background: none; border-radius: 0; gap: 10px; }
+.timeline-summary .hl-mark { width: 22px; height: 22px; }
 .timeline-numbers { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 14px 0 0; padding-top: 12px; border-top: 1px solid var(--border); color: var(--ink-3); }
 .timeline-numbers strong { font-weight: 650; color: var(--ink); font-variant-numeric: tabular-nums; }
 .timeline-more { display: inline-block; margin-top: 12px; font-weight: 600; }
@@ -95,7 +95,7 @@ writeFileSync(join(outDir, 'index.html'), renderIndex(published));
 console.log(`Wrote index.html (${published.length} report${published.length === 1 ? '' : 's'})`);
 
 // The index is a timeline, newest report first: a dot on a vertical rail per report, with its
-// period, the first two highlights and a few headline numbers.
+// period, its highlights and a few headline numbers.
 function renderIndex(items) {
   const list = items.length
     ? items.map(({ slug, report }, i) => renderTimelineEntry(slug, report, i === 0)).join('')
@@ -146,7 +146,7 @@ function renderTimelineEntry(slug, report, latest) {
       <p class="timeline-date"><time datetime="${escapeHtml(period.start)}">${formatDate(period.start, year)} – ${formatDate(period.end, null)}</time>${latest ? ' <span class="timeline-tag">Latest</span>' : ''}${report.draft ? ' <span class="timeline-tag timeline-draft">Draft</span>' : ''}</p>
       <article class="timeline-card">
         <h2><a href="${href}">${escapeHtml(period.label)}</a></h2>
-        <p class="timeline-summary">${report.summary.slice(0, 2).map(richText).join(' ')}</p>
+        ${renderHighlights(report.summary, 'summary timeline-summary')}
         <p class="timeline-numbers">${numbers}</p>
         <a class="timeline-more" href="${href}">Read the report <span aria-hidden="true">→</span></a>
       </article>
