@@ -432,7 +432,7 @@
         },
         {
           "label": "Fixed and deployed",
-          "value": 9
+          "value": 16
         },
         {
           "label": "Closed as not a vulnerability or duplicate",
@@ -457,24 +457,24 @@
           "title": "Fixes, by area",
           "entries": [
             {
-              "label": "Sign-in & 2FA",
-              "value": 2
+              "label": "OAuth & API tokens",
+              "value": 5
             },
             {
-              "label": "OAuth & API tokens",
-              "value": 2
+              "label": "Sign-in & 2FA",
+              "value": 3
+            },
+            {
+              "label": "Permissions",
+              "value": 3
             },
             {
               "label": "Payments & ledger",
               "value": 2
             },
             {
-              "label": "Permissions",
-              "value": 1
-            },
-            {
               "label": "Private data exposure",
-              "value": 1
+              "value": 2
             },
             {
               "label": "Embeddable widgets",
