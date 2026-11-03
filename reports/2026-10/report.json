@@ -15,7 +15,6 @@
     ]
   },
   "summary": [
-    "**New pricing** and **platform tips** are live for every host.",
     "Large **CSV exports** now run in the background for everyone, instead of timing out.",
     "Host admins get a full **dashboard view of each hosted collective**, even without a public page.",
     "Sturdier **payouts**: the **Wise** integration was hardened and **PayPal** subscriptions are reconciled weekly.",
@@ -66,10 +65,10 @@
   },
   "shipped": [
     {
-      "title": "New pricing and platform tips",
+      "title": "Platform tips and billing",
       "url": "https://github.com/opencollective/opencollective/issues/9008",
       "area": "Improvements",
-      "summary": "The new platform pricing is **on by default for every host**.",
+      "summary": "Updates to **platform tips** and the **monthly platform bill**.",
       "start": "2026-09-01",
       "end": "2026-10-16",
       "prs": 3,
