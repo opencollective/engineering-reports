@@ -736,13 +736,18 @@ function sectionTitle(id, title, count) {
 const SPARKLE = '<svg width="12" height="12" viewBox="0 0 16 16"><path fill="currentColor" d="M8 1c.4 3.6 2.4 5.6 7 7-4.6 1.4-6.6 3.4-7 7-.4-3.6-2.4-5.6-7-7 4.6-1.4 6.6-3.4 7-7Z"/></svg>';
 const HIGHLIGHT_TINTS = 5;
 
+// The highlights list, also shown on the site index.
+export function renderHighlights(summary, className = 'summary') {
+  return `<ul class="${className}">${summary
+    .map((bullet, i) => `<li><span class="hl-mark hl-${i % HIGHLIGHT_TINTS}" aria-hidden="true">${SPARKLE}</span><span>${richText(bullet)}</span></li>`)
+    .join('')}</ul>`;
+}
+
 function renderSummary(report) {
   return `
   <section class="section" id="highlights">
     ${sectionTitle(null, 'Highlights')}
-    <ul class="summary">${report.summary
-      .map((bullet, i) => `<li><span class="hl-mark hl-${i % HIGHLIGHT_TINTS}" aria-hidden="true">${SPARKLE}</span><span>${richText(bullet)}</span></li>`)
-      .join('')}</ul>
+    ${renderHighlights(report.summary)}
   </section>`;
 }
 

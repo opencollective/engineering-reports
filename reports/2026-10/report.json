@@ -65,10 +65,10 @@
   },
   "shipped": [
     {
-      "title": "Platform tips and billing",
+      "title": "Platform tips",
       "url": "https://github.com/opencollective/opencollective/issues/9008",
       "area": "Improvements",
-      "summary": "Updates to **platform tips** and the **monthly platform bill**.",
+      "summary": "Better **platform tips**, now tested as the **default on Open Source Collective**.",
       "start": "2026-09-01",
       "end": "2026-10-16",
       "prs": 3,
@@ -76,9 +76,8 @@
         "znarf"
       ],
       "points": [
-        "Crowdfunding fee shown on the monthly platform bill",
-        "Open Source Collective uses the default platform tip",
-        "Organizations with no activity are no longer billed"
+        "Platform tips UI and infrastructure improved",
+        "A/B test released: platform tips on by default for Open Source Collective"
       ]
     },
     {
