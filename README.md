@@ -18,7 +18,7 @@ This repository holds both the reports and the tooling that produces them:
 
 Ask an agent with the skill for a period, for example "generate a report for November". It follows [`references/report.md`](.agents/skills/oc-engineering-board/references/report.md): it asks two scope questions, researches the board and the merged pull requests, proposes board changes for approval, then writes `reports/<YYYY-MM>/report.json`.
 
-New reports start with `"draft": true`. Drafts are validated in CI but not published. Remove the flag when the report is approved.
+New reports start with `"draft": true`. Drafts are validated in CI and shown in the pull request preview, but not published. Remove the flag when the report is approved.
 
 ## Building locally
 
@@ -33,6 +33,13 @@ node .agents/skills/oc-engineering-board/scripts/build-report.mjs reports/2026-1
 
 ## Publishing
 
-The [workflow](.github/workflows/pages.yml) runs the tests and builds the site on every pull request. On `main` it deploys `_site/` to GitHub Pages, with each report at `/<YYYY-MM>/`. Pages must be set to deploy from **GitHub Actions** (Settings → Pages → Source).
+The [build workflow](.github/workflows/pages.yml) runs the tests and builds the site on every pull request. On `main` it pushes `_site/` to the `gh-pages` branch, which GitHub Pages serves, with each report at `/<YYYY-MM>/`.
+
+Every pull request from a branch of this repository also gets a preview of the site, drafts included, at `https://opencollective.github.io/engineering-reports/pr-preview/pr-<number>/` ([preview workflow](.github/workflows/preview.yml), using [pr-preview-action](https://github.com/rossjrw/pr-preview-action)). A bot comment on the pull request links to it, and the preview is removed when the pull request closes. Pull requests from forks get no preview.
+
+Repository settings this needs:
+
+- **Settings → Pages → Source**: Deploy from a branch, `gh-pages`, `/ (root)`. The branch is created by the first preview or `main` deploy.
+- **Settings → Actions → General → Workflow permissions**: Read and write permissions.
 
 To change the design of every report, edit `assets/report/style.css` or `build-report.mjs` and run `npm test`.
