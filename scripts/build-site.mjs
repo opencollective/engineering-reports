@@ -26,7 +26,7 @@ for (const dir of readdirSync(REPORTS, { withFileTypes: true }).filter(entry => 
     continue;
   }
   const report = JSON.parse(readFileSync(file, 'utf8'));
-  const { errors, warnings } = validateReport(report);
+  const { errors, warnings } = validateReport(report, { baseDir: join(REPORTS, dir.name) });
   warnings.forEach(warning => console.error(`warning: ${dir.name}: ${warning}`));
   if (errors.length) {
     failed = true;
@@ -38,7 +38,7 @@ for (const dir of readdirSync(REPORTS, { withFileTypes: true }).filter(entry => 
     console.log(`Skipped draft ${dir.name}`);
     continue;
   }
-  published.push({ slug: dir.name, report });
+  published.push({ slug: dir.name, report, baseDir: join(REPORTS, dir.name) });
 }
 
 if (failed) {
@@ -49,9 +49,9 @@ rmSync(outDir, { recursive: true, force: true });
 mkdirSync(outDir, { recursive: true });
 writeFileSync(join(outDir, '.nojekyll'), '');
 
-for (const { slug, report } of published) {
+for (const { slug, report, baseDir } of published) {
   mkdirSync(join(outDir, slug), { recursive: true });
-  writeFileSync(join(outDir, slug, 'index.html'), renderReport(report, CSS));
+  writeFileSync(join(outDir, slug, 'index.html'), renderReport(report, { css: CSS, baseDir }));
   console.log(`Wrote ${slug}/index.html`);
 }
 
@@ -66,7 +66,7 @@ function renderIndex(items) {
           ({ slug, report }) => `
       <li>
         <a href="./${escapeHtml(slug)}/">${escapeHtml(report.period.label)}</a>${report.draft ? ' <span class="index-draft">Draft</span>' : ''}
-        <p>${escapeHtml(report.summary[0])}</p>
+        <p>${escapeHtml(report.summary.slice(0, 2).join(' '))}</p>
       </li>`,
         )
         .join('')
