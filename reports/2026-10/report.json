@@ -52,8 +52,16 @@
         }
       ]
     },
-    "issuesClosed": {
-      "value": 118
+    "issues": {
+      "repo": "opencollective/opencollective",
+      "closed": {
+        "value": 118,
+        "previous": 13
+      },
+      "opened": {
+        "value": 115,
+        "previous": 20
+      }
     }
   },
   "shipped": [
@@ -336,9 +344,67 @@
       "title": "Review security tickets",
       "url": "https://github.com/opencollective/opencollective/issues/8994",
       "area": "Security",
-      "summary": "Triage of and response to reports from the security program. Reports received in October were reviewed and the resulting fixes deployed; details stay private.",
+      "summary": "Triage of and response to reports from the bug bounty program and internal reviews. Details stay private; only fixed issues are counted by area.",
       "people": [
         "Betree"
+      ],
+      "figures": [
+        {
+          "label": "Reports received",
+          "value": 37
+        },
+        {
+          "label": "Fixed and deployed",
+          "value": 9
+        },
+        {
+          "label": "Closed as not a vulnerability or duplicate",
+          "value": 3
+        }
+      ],
+      "breakdowns": [
+        {
+          "title": "Reports received, by source",
+          "entries": [
+            {
+              "label": "Bug bounty",
+              "value": 24
+            },
+            {
+              "label": "Internal review",
+              "value": 13
+            }
+          ]
+        },
+        {
+          "title": "Fixes, by area",
+          "entries": [
+            {
+              "label": "Sign-in & 2FA",
+              "value": 2
+            },
+            {
+              "label": "OAuth & API tokens",
+              "value": 2
+            },
+            {
+              "label": "Payments & ledger",
+              "value": 2
+            },
+            {
+              "label": "Permissions",
+              "value": 1
+            },
+            {
+              "label": "Private data exposure",
+              "value": 1
+            },
+            {
+              "label": "Embeddable widgets",
+              "value": 1
+            }
+          ]
+        }
       ]
     }
   ],

@@ -10,20 +10,21 @@ import { fileURLToPath } from 'node:url';
 const ASSETS = join(dirname(fileURLToPath(import.meta.url)), '..', 'assets', 'report');
 const BOARD_URL = 'https://github.com/orgs/opencollective/projects/21';
 
-// Engineering Area options, in report order, with the color family each one uses.
+// Engineering Area options in the board's own option order (the report follows it everywhere),
+// with the color family each one uses.
 export const AREAS = [
-  ['Improvements', 'product'],
-  ['Payment processors', 'product'],
-  ['Support', 'product'],
-  ['Bug fixes', 'bugs'],
   ['Security', 'trust'],
-  ['Compliance', 'trust'],
   ['Reliability & monitoring', 'reliability'],
+  ['Payment processors', 'product'],
+  ['Bug fixes', 'bugs'],
+  ['Improvements', 'product'],
+  ['Compliance', 'trust'],
   ['Resilience & recovery', 'reliability'],
   ['Platform maintenance', 'foundations'],
   ['Technical debt', 'foundations'],
   ['Testing & CI', 'dx'],
   ['Developer experience', 'dx'],
+  ['Support', 'product'],
 ];
 const AREA_FAMILY = new Map(AREAS);
 const AREA_ORDER = new Map(AREAS.map(([name], index) => [name, index]));
@@ -148,14 +149,24 @@ export function validateReport(report, { baseDir } = {}) {
         checkPrevious(entry, at);
       });
     }
-    if (!isObject(metrics.issuesClosed) || !isCount(metrics.issuesClosed.value)) {
-      errors.push('metrics.issuesClosed.value must be a non-negative integer');
+    const issues = metrics.issues;
+    if (!isObject(issues)) {
+      errors.push('metrics.issues is required');
     } else {
-      checkPrevious(metrics.issuesClosed, 'metrics.issuesClosed');
+      if (typeof issues.repo !== 'string' || !/^[\w.-]+\/[\w.-]+$/.test(issues.repo)) {
+        errors.push('metrics.issues.repo must be an owner/repo name');
+      }
+      for (const key of ['closed', 'opened']) {
+        if (!isObject(issues[key]) || !isCount(issues[key].value)) {
+          errors.push(`metrics.issues.${key}.value must be a non-negative integer`);
+        } else {
+          checkPrevious(issues[key], `metrics.issues.${key}`);
+        }
+      }
     }
-    for (const removed of ['contributors', 'shippedPrevious']) {
+    for (const removed of ['contributors', 'shippedPrevious', 'issuesClosed']) {
       if (metrics[removed] !== undefined) {
-        errors.push(`metrics.${removed} is no longer reported; remove it`);
+        errors.push(`metrics.${removed} is no longer reported; remove it${removed === 'issuesClosed' ? ' (use metrics.issues)' : ''}`);
       }
     }
     if (hasPrevious) {
@@ -258,6 +269,36 @@ export function validateReport(report, { baseDir } = {}) {
             } else {
               requireString(entry.url, `${at}.done[${j}].url`);
             }
+          });
+        }
+      }
+      for (const key of ['figures', 'breakdowns']) {
+        if (item[key] !== undefined && path !== 'ongoing') {
+          errors.push(`${at}.${key} is only for ongoing items`);
+        }
+      }
+      const validateCounts = (entries, where) => {
+        if (!Array.isArray(entries) || entries.length === 0) {
+          errors.push(`${where} must be a non-empty array of { label, value }`);
+          return;
+        }
+        entries.forEach((entry, j) => {
+          requireString(entry?.label, `${where}[${j}].label`);
+          if (!isCount(entry?.value)) {
+            errors.push(`${where}[${j}].value must be a non-negative integer`);
+          }
+        });
+      };
+      if (item.figures !== undefined) {
+        validateCounts(item.figures, `${at}.figures`);
+      }
+      if (item.breakdowns !== undefined) {
+        if (!Array.isArray(item.breakdowns)) {
+          errors.push(`${at}.breakdowns must be an array of { title, entries }`);
+        } else {
+          item.breakdowns.forEach((breakdown, j) => {
+            requireString(breakdown?.title, `${at}.breakdowns[${j}].title`);
+            validateCounts(breakdown?.entries, `${at}.breakdowns[${j}].entries`);
           });
         }
       }
@@ -477,41 +518,99 @@ function areaFilters(context, sectionId, items) {
 // ---------------------------------------------------------------------------
 // Sections
 
+// Anchor ids for items and misc topics.
+function itemId(item) {
+  return `item-${slug(shortRef(item.url) || item.title)}`;
+}
+
+function miscTopics(report) {
+  const topics = new Map();
+  for (const entry of report.misc ?? []) {
+    const topic = entry.topic ?? '';
+    topics.set(topic, [...(topics.get(topic) ?? []), entry]);
+  }
+  return [...topics].sort(([a, x], [b, y]) => y.length - x.length || a.localeCompare(b));
+}
+
 // Every section the report shows, in page order. Empty sections are left out.
 function sectionsOf(report) {
-  const list = [{ id: 'shipped', title: 'Shipped projects' }];
+  const list = [
+    { id: 'numbers', title: 'Key numbers' },
+    { id: 'highlights', title: 'Highlights' },
+    { id: 'shipped', title: 'Shipped projects', dot: true },
+  ];
   if (report.scope.inProgress && report.inProgress?.length) {
-    list.push({ id: 'in-progress', title: 'In progress' });
+    list.push({ id: 'in-progress', title: 'In progress', dot: true });
   }
   if (report.ongoing?.length) {
-    list.push({ id: 'ongoing', title: 'Ongoing work' });
+    list.push({ id: 'ongoing', title: 'Ongoing work', dot: true });
   }
   if (report.scope.inProgress && report.next?.length) {
-    list.push({ id: 'next', title: 'Up next' });
+    list.push({ id: 'next', title: 'Up next', dot: true });
   }
   if (report.scope.offBoard && report.misc.length) {
-    list.push({ id: 'misc', title: 'Misc fixes and improvements' });
+    list.push({ id: 'misc', title: 'Misc fixes and improvements', dot: true });
   }
   return list;
 }
 
+// Outline of the top-level sections in a left sidebar, like a Google Docs outline. Collapsible on narrow screens.
+function renderOutline(report) {
+  const entries = sectionsOf(report)
+    .map(section => {
+      const dot = section.dot ? `<span class="dot dot-${section.id}" aria-hidden="true"></span>` : '';
+      return `<li><a class="toc-section" href="#${section.id}">${dot}${section.title}</a></li>`;
+    })
+    .join('');
+  return `
+<nav class="toc" aria-label="Contents">
+  <details class="toc-details" open>
+    <summary>Contents</summary>
+    <a class="toc-doc" href="#top">Engineering report: ${escapeHtml(report.period.label)}</a>
+    <ol class="toc-list">${entries}</ol>
+  </details>
+</nav>`;
+}
+
+// Highlights the outline entry for the section being read; closes the outline on narrow screens.
+const OUTLINE_SCRIPT = `
+(() => {
+  const details = document.querySelector('.toc-details');
+  const narrow = matchMedia('(max-width: 1100px)');
+  const syncOpen = () => { details.open = !narrow.matches; };
+  syncOpen();
+  narrow.addEventListener('change', syncOpen);
+  const links = [...document.querySelectorAll('.toc a[href^="#"]')];
+  const targets = links.map(link => document.getElementById(link.hash.slice(1))).filter(Boolean);
+  let queued = false;
+  const update = () => {
+    queued = false;
+    let current = null;
+    for (const target of targets) {
+      if (target.offsetParent !== null && target.getBoundingClientRect().top < 140) current = target;
+    }
+    for (const link of links) {
+      link.classList.toggle('active', !!current && link.hash === '#' + current.id);
+    }
+  };
+  addEventListener('scroll', () => { if (!queued) { queued = true; requestAnimationFrame(update); } }, { passive: true });
+  update();
+})();`;
+
 function renderHeader(report) {
   const { period } = report;
   const year = parseDate(period.end).year;
-  const chips = sectionsOf(report).map(
-    section => `<a class="chip" href="#${section.id}"><span class="dot dot-${section.id}" aria-hidden="true"></span>${section.title}</a>`,
-  );
   return `
-  <header class="report-header">
-    <div>
-      <p class="eyebrow"><span class="eyebrow-mark" aria-hidden="true"></span>Open Collective engineering</p>
-      <h1>Engineering report: ${escapeHtml(period.label)}</h1>
-      <p class="period">${formatDate(period.start, year)} – ${formatDate(period.end, null)} · Generated ${formatDate(report.generatedOn, year)}</p>
-    </div>
-    <nav class="chips" aria-label="Sections">
-      ${chips.join('')}
-    </nav>
+  <header class="report-header" id="top">
+    <p class="eyebrow"><span class="eyebrow-mark" aria-hidden="true"></span>Open Collective engineering</p>
+    <h1>Engineering report: ${escapeHtml(period.label)}</h1>
+    <p class="period">${formatDate(period.start, year)} – ${formatDate(period.end, null)}</p>
   </header>`;
+}
+
+// GitHub search links for the numbers, so readers can open the underlying lists.
+function searchUrl(repo, kind, query) {
+  return `https://github.com/${repo}/${kind}?q=${encodeURIComponent(query).replaceAll('%20', '+')}`;
 }
 
 function deltaBadge(value, previous, previousLabel) {
@@ -530,7 +629,8 @@ function previousLine(previous, previousLabel) {
 }
 
 // Total merged pull requests, then one bar per repository (single hue: the bars compare magnitudes).
-function renderPrTile(metrics) {
+function renderPrTile(report) {
+  const { metrics, period } = report;
   const repos = [...metrics.prsMerged.byRepo].sort((a, b) => b.value - a.value);
   const total = repos.reduce((sum, entry) => sum + entry.value, 0);
   const previousTotal = repos.every(entry => entry.previous !== undefined) ? repos.reduce((sum, entry) => sum + entry.previous, 0) : undefined;
@@ -542,7 +642,7 @@ function renderPrTile(metrics) {
       const previous = entry.previous === undefined ? '<span></span>' : `<span class="bar-previous">${escapeHtml(shortMonth(metrics.previousLabel))}: ${entry.previous}</span>`;
       return `
         <li class="bar-row" title="${escapeHtml(label)}: ${entry.value} merged${entry.previous === undefined ? '' : `, ${entry.previous} in ${escapeHtml(metrics.previousLabel)}`}">
-          <a class="bar-label" href="https://github.com/${escapeHtml(entry.repo)}">${escapeHtml(label)}</a>
+          <a class="bar-label" href="${escapeHtml(searchUrl(entry.repo, 'pulls', `is:pr is:merged merged:${period.start}..${period.end} -author:app/renovate -author:app/dependabot`))}">${escapeHtml(label)}</a>
           <span class="bar-track"><span class="bar-fill" style="width:${width}%"></span></span>
           <span class="bar-value">${entry.value}</span>${previous}
         </li>`;
@@ -564,17 +664,33 @@ function shortMonth(label) {
   return month ?? label;
 }
 
-function renderStats(report) {
-  const { metrics } = report;
-  const issues = metrics.issuesClosed;
+// Issues closed as completed and issues opened in the tracker, each against the previous period.
+function renderIssuesTile(report) {
+  const { metrics, period } = report;
+  const { repo } = metrics.issues;
+  const stat = (label, metric, query) => `
+        <a class="issue-stat" href="${escapeHtml(searchUrl(repo, 'issues', query))}">
+          <span class="issue-label">${label}</span>
+          <span class="tile-value">${metric.value.toLocaleString('en-US')}${deltaBadge(metric.value, metric.previous, metrics.previousLabel)}</span>
+          ${metric.previous === undefined ? '' : `<span class="tile-previous" title="${metric.previous.toLocaleString('en-US')} in ${escapeHtml(metrics.previousLabel)}">${metric.previous.toLocaleString('en-US')} in ${escapeHtml(shortMonth(metrics.previousLabel))}</span>`}
+        </a>`;
   return `
-  <section class="stats" aria-label="Key numbers">
-    ${renderPrTile(metrics)}
     <div class="tile">
-      <p class="tile-label">Issues closed</p>
-      <p class="tile-value">${issues.value.toLocaleString('en-US')}${deltaBadge(issues.value, issues.previous, metrics.previousLabel)}</p>
-      ${previousLine(issues.previous, metrics.previousLabel)}
-    </div>
+      <p class="tile-label">Issues in <a href="https://github.com/${escapeHtml(repo)}/issues">${escapeHtml(repo)}</a></p>
+      <div class="issue-stats">${stat('Closed', metrics.issues.closed, `is:issue reason:completed closed:${period.start}..${period.end}`)}${stat(
+        'Opened',
+        metrics.issues.opened,
+        `is:issue created:${period.start}..${period.end}`,
+      )}
+      </div>
+    </div>`;
+}
+
+function renderStats(report) {
+  return `
+  <section class="stats" id="numbers" aria-label="Key numbers">
+    ${renderPrTile(report)}
+    ${renderIssuesTile(report)}
   </section>`;
 }
 
@@ -603,7 +719,7 @@ function titleLink(item) {
 
 function renderCard(context, item, year) {
   return `
-        <article class="card card-tinted area-${areaFamily(item.area)}${item.images?.length ? ' card-wide' : ''}" data-filter="${slug(item.area)}">
+        <article class="card card-tinted area-${areaFamily(item.area)}${item.images?.length ? ' card-wide' : ''}" id="${itemId(item)}" data-filter="${slug(item.area)}">
           <div class="card-body">
             ${areaPill(item.area)}
             ${titleLink(item)}
@@ -645,7 +761,7 @@ function renderRow(context, item, year, withProgress) {
         </div>`;
   }
   return `
-      <li class="row" data-filter="${slug(item.area)}">
+      <li class="row" id="${itemId(item)}" data-filter="${slug(item.area)}">
         <div class="row-main">
           <div class="row-head">${areaPill(item.area)}${titleLink(item)}</div>
           ${item.summary ? `<p class="card-summary">${richText(item.summary)}</p>` : ''}
@@ -677,8 +793,21 @@ function renderOngoing(context, report) {
   const label = report.period.label;
   const rows = sortByArea(report.ongoing)
     .map(item => {
-      const done = item.done?.length
-        ? `<div class="done"><p class="done-title">Done in ${escapeHtml(label)}<span class="count">${item.done.length}</span></p><ul class="done-list">${item.done
+      const figures = item.figures?.length
+        ? `<dl class="figures">${item.figures.map(f => `<div class="figure"><dt>${escapeHtml(f.label)}</dt><dd>${f.value.toLocaleString('en-US')}</dd></div>`).join('')}</dl>`
+        : '';
+      const breakdowns = item.breakdowns?.length
+        ? `<div class="breakdowns">${item.breakdowns
+            .map(
+              b =>
+                `<div class="breakdown"><p class="breakdown-title">${escapeHtml(b.title)}</p><ul>${b.entries
+                  .map(e => `<li>${escapeHtml(e.label)}<span class="count">${e.value}</span></li>`)
+                  .join('')}</ul></div>`,
+            )
+            .join('')}</div>`
+        : '';
+      const list = item.done?.length
+        ? `<ul class="done-list">${item.done
             .map(entry => {
               // One change can span several services: the title links its only PR, or each service tag links its own.
               if (entry.links) {
@@ -688,10 +817,14 @@ function renderOngoing(context, report) {
               const repo = repoFromUrl(entry.url);
               return `<li><a href="${escapeHtml(entry.url)}">${escapeHtml(entry.title)}</a>${repo ? `<span class="tags"><span class="tag">${escapeHtml(repoLabel(repo))}</span></span>` : ''}</li>`;
             })
-            .join('')}</ul></div>`
+            .join('')}</ul>`
         : '';
+      const done =
+        figures || breakdowns || list
+          ? `<div class="done"><p class="done-title">In ${escapeHtml(label)}${item.done?.length ? `<span class="count" title="Changes listed">${item.done.length}</span>` : ''}</p>${figures}${breakdowns}${list}</div>`
+          : '';
       return `
-      <li class="row row-ongoing" data-filter="${slug(item.area)}">
+      <li class="row row-ongoing" id="${itemId(item)}" data-filter="${slug(item.area)}">
         <div class="row-main">
           <div class="row-head">${areaPill(item.area)}${titleLink(item)}</div>
           ${item.summary ? `<p class="card-summary">${richText(item.summary)}</p>` : ''}
@@ -724,16 +857,11 @@ function renderMisc(context, report) {
     return `<li class="misc-item" data-filter="${entry.kind}"><span class="kind kind-${entry.kind}">${kindLabel}</span><span class="misc-title">${title}</span>${repo ? `<span class="tag">${escapeHtml(repoLabel(repo))}</span>` : ''}</li>`;
   };
   const byKind = (a, b) => MISC_KINDS.findIndex(([k]) => k === a.kind) - MISC_KINDS.findIndex(([k]) => k === b.kind);
-  const topics = new Map();
-  for (const entry of report.misc) {
-    const topic = entry.topic ?? '';
-    topics.set(topic, [...(topics.get(topic) ?? []), entry]);
-  }
-  const groups = [...topics]
-    .sort(([a, x], [b, y]) => y.length - x.length || a.localeCompare(b))
+  const topics = miscTopics(report);
+  const groups = topics
     .map(
       ([topic, entries]) => `
-      <div class="misc-group" data-filter-group>
+      <div class="misc-group"${topic ? ` id="misc-${slug(topic)}"` : ''} data-filter-group>
         ${topic ? `<h3>${escapeHtml(topic)}<span class="count">${entries.length}</span></h3>` : ''}
         <ul>${[...entries].sort(byKind).map(line).join('')}</ul>
       </div>`,
@@ -744,27 +872,9 @@ function renderMisc(context, report) {
     ${sectionTitle('misc', 'Misc fixes and improvements', report.misc.length)}
     <p class="section-intro">Smaller changes merged during the period that are not part of a board project.</p>
     ${filters}
-    <div class="misc${topics.size > 1 ? '' : ' misc-single'}">${groups}
+    <div class="misc${topics.length > 1 ? '' : ' misc-single'}">${groups}
     </div>
   </section>`;
-}
-
-function renderFooter(report) {
-  const { scope } = report;
-  const repos = report.metrics.prsMerged.byRepo
-    .map(({ repo }) => `<a href="https://github.com/${escapeHtml(repo)}">${escapeHtml(repo)}</a>`)
-    .join(', ');
-  const included = [
-    'projects completed on the board',
-    report.ongoing?.length ? 'what was done on ongoing work' : null,
-    scope.inProgress ? 'current work in progress and upcoming priorities' : null,
-    scope.offBoard ? 'smaller work merged outside the board' : null,
-  ].filter(Boolean);
-  return `
-  <footer class="report-footer">
-    <p>Built from the <a href="${BOARD_URL}">Engineering Board</a>. Includes ${included.join(', ')}.</p>
-    <p>Numbers cover pull requests merged in ${repos}, excluding automated dependency updates, and issues closed as completed in <a href="https://github.com/opencollective/opencollective">opencollective/opencollective</a>.</p>
-  </footer>`;
 }
 
 // `baseDir` is the report's directory, needed when items have images.
@@ -773,6 +883,7 @@ export function renderReport(report, { css = readFileSync(join(ASSETS, 'style.cs
   const year = parseDate(report.period.end).year;
   const sections = [renderHeader(report), renderStats(report), renderSummary(report), renderShipped(context, report)];
   const present = new Set(sectionsOf(report).map(section => section.id));
+
   if (present.has('in-progress')) {
     sections.push(renderRowSection(context, 'in-progress', 'In progress', 'Board projects still being worked on.', report.inProgress, year, true));
   }
@@ -785,7 +896,6 @@ export function renderReport(report, { css = readFileSync(join(ASSETS, 'style.cs
   if (present.has('misc')) {
     sections.push(renderMisc(context, report));
   }
-  sections.push(renderFooter(report));
 
   return `<!doctype html>
 <html lang="en">
@@ -797,8 +907,12 @@ export function renderReport(report, { css = readFileSync(join(ASSETS, 'style.cs
 ${css}${context.css.length ? `\n/* Quick filters for this report */\n${context.css.join('\n')}\n` : ''}</style>
 </head>
 <body>
+<div class="layout">${renderOutline(report)}
 <main class="report">${sections.join('\n')}
 </main>
+</div>
+<script>${OUTLINE_SCRIPT}
+</script>
 </body>
 </html>
 `;

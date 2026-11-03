@@ -44,9 +44,16 @@
         }
       ]
     },
-    "issuesClosed": {
-      "value": 118,
-      "previous": 97
+    "issues": {
+      "repo": "opencollective/opencollective",
+      "closed": {
+        "value": 118,
+        "previous": 97
+      },
+      "opened": {
+        "value": 104,
+        "previous": 88
+      }
     }
   },
   "shipped": [
@@ -171,7 +178,32 @@
       "title": "Security report handling",
       "url": "https://github.com/opencollective/opencollective/issues/7900",
       "area": "Security",
-      "summary": "Triage and response for reports from the security program; details stay private."
+      "summary": "Triage and response for reports from the security program; details stay private.",
+      "figures": [
+        {
+          "label": "Reports received",
+          "value": 12
+        },
+        {
+          "label": "Fixed and deployed",
+          "value": 5
+        }
+      ],
+      "breakdowns": [
+        {
+          "title": "Reports received, by source",
+          "entries": [
+            {
+              "label": "Bug bounty",
+              "value": 9
+            },
+            {
+              "label": "Internal review",
+              "value": 3
+            }
+          ]
+        }
+      ]
     }
   ],
   "next": [

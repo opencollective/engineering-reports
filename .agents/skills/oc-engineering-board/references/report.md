@@ -1,6 +1,6 @@
 # Period report
 
-A report covers one period (usually a calendar month: "the engineering work in October") and is published on GitHub Pages from the [opencollective/engineering-reports](https://github.com/opencollective/engineering-reports) repository, which also holds this skill. Every report has the same structure and design: the content goes into a `report.json` (plus optional screenshots beside it), and `scripts/build-report.mjs` renders it with `assets/report/style.css` into one self-contained HTML file. Edit the shared assets to change the design for all reports, and run `node --test scripts/build-report.test.mjs` from the skill folder after; write content only into `report.json` and its `images/`. When the board gains or renames an Engineering Area, update `AREAS` in the script (it sets each area's order and color); when a new service repository appears in the pull request breakdown, give it a short name in `REPO_LABELS`.
+A report covers one period (usually a calendar month: "the engineering work in October") and is published on GitHub Pages from the [opencollective/engineering-reports](https://github.com/opencollective/engineering-reports) repository, which also holds this skill. Every report has the same structure and design: the content goes into a `report.json` (plus optional screenshots beside it), and `scripts/build-report.mjs` renders it with `assets/report/style.css` into one self-contained HTML file. Edit the shared assets to change the design for all reports, and run `node --test scripts/build-report.test.mjs` from the skill folder after; write content only into `report.json` and its `images/`. When the board gains, renames or reorders an Engineering Area, update `AREAS` in the script: it sets each area's color and the order used everywhere in the report, which must match the order of the board's Engineering Area options; when a new service repository appears in the pull request breakdown, give it a short name in `REPO_LABELS`.
 
 Readers are the team and fiscal hosts. Write for them: plain language, user-visible impact, no internal jargon. Every GitHub handle in the report links to its profile: the renderer does this for `people` and for `@login` in any text field.
 
@@ -47,7 +47,11 @@ Read the board (`SKILL.md`, "Read the board") and each item's issue fields. Use 
 
 - **Shipped**: `Done` cards whose Target date (or `closedAt` when unset) falls in the period.
 - **In progress** (only with `scope.inProgress`): `In progress` cards.
-- **Ongoing**: `Ongoing` cards (continuous work such as security report handling or keeping servers and dependencies up to date) that had activity in the period. Their sub-issues and PR lists span years, so overall progress means nothing: collect only the sub-issues closed and the PRs merged **during the period**, and report those as the item's `done` list. For security cards, never list titles or links: say in the summary that reports were handled and fixes deployed. Sub-issues from the private security repository are not readable from most sessions; leave counts out rather than guessing.
+- **Ongoing**: `Ongoing` cards (continuous work such as security report handling or keeping servers and dependencies up to date) that had activity in the period. Their sub-issues and PR lists span years, so overall progress means nothing: collect only the sub-issues closed and the PRs merged **during the period**, and report those as the item's `done` list. For the security card, never list titles, links or anything that identifies a vulnerability. Read `opencollective/opencollective-security` instead (search issues updated in the period) and report only aggregates as `figures` and `breakdowns`:
+  - `figures`: reports received in the period, fixed and deployed (closed as completed in the period), and closed as not a vulnerability or duplicate.
+  - Reports received by source: **Bug bounty** (`source > bounty`, and `vdp-report`: the operator counts the disclosure program as the bug bounty) and **Internal review** (`source > harness`, or no source label; say in the notes that this is inferred).
+  - Fixes by area, for **fixed issues only**, never open ones: broad product areas such as "Sign-in & 2FA", "OAuth & API tokens", "Payments & ledger", "Permissions", "Private data exposure". Name the part of the product, not the attack ("Embeddable widgets", not "Script injection").
+  If the security repository is not readable, leave the figures out rather than guessing.
 - **Next** (only with `scope.inProgress`): `Next` cards.
 
 A section with no items is left out of the report, header link included; omit the key or leave the array empty.
@@ -59,7 +63,9 @@ For each item collect: title, URL, Engineering Area, Start and Target dates, sub
 **Metrics**, all for the period:
 
 - `prsMerged.byRepo`: merged PRs per service repository, dependency bots excluded: at least `opencollective-api`, `opencollective-frontend`, `opencollective-pdf`, `opencollective-rest` and `opencollective-images`, plus any other service that had merged PRs. Use one search over the organization and group by repository (`-author:app/renovate -author:app/dependabot`, 100 per page) rather than one search per repository, which hits GitHub's secondary rate limit. The report shows the total and one bar per repository; short names come from `REPO_LABELS` in the script.
-- `issuesClosed`: issues in `opencollective/opencollective` closed as completed: `gh search issues reason:completed --repo opencollective/opencollective --closed 2026-10-01..2026-10-31 --limit 1000 --json url | jq length`.
+- `issues`: in `opencollective/opencollective`, issues `closed` as completed (`is:issue reason:completed closed:2026-10-01..2026-10-31`) and issues `opened` (`is:issue created:2026-10-01..2026-10-31`); read `total_count` from `gh api -X GET search/issues`. Mention in the notes when board bookkeeping (retroactive issues) inflates them.
+
+The renderer links each repository's pull request count and each issue count to the matching GitHub search for the period.
 
 When the previous period's `report.json` exists, copy its metric values as `previous`; otherwise compute them for the previous period of equal length, or omit them. Contributor counts and the number of projects shipped are not reported.
 
@@ -68,17 +74,17 @@ When the previous period's `report.json` exists, copy its metric values as `prev
 `assets/report/example.json` shows every field. Shape:
 
 - `period`: `label` ("October 2026"), `start`, `end` (ISO dates).
-- `generatedOn`: today's date.
+- `generatedOn`: today's date (kept in the JSON, not shown).
 - `scope`: `inProgress`, `offBoard` (booleans), `repos` (the repositories the metrics and off-board research covered).
 - `summary`: the Highlights, three to five bullet points, one short line each (under 180 characters): the work that mattered most to users, stated plainly with no lead-in. Write it last, from the items.
-- `metrics`: `prsMerged: { byRepo: [{ repo, value, previous }] }`, `issuesClosed: { value, previous }` (`previous` optional), and `previousLabel` ("September 2026") when any previous value is set.
+- `metrics`: `prsMerged: { byRepo: [{ repo, value, previous }] }`, `issues: { repo, closed: { value, previous }, opened: { value, previous } }` (`previous` optional), and `previousLabel` ("September 2026") when any previous value is set.
 - `shipped`, `inProgress`, `next`: board items `{ title, url, area, summary, start, end, subIssues: { done, total }, prs, people, images }`. Only `title`, `url` and `area` are required. `area` is an Engineering Area option name. `images` is a list of `{ src, alt, caption }` with `src` relative to `report.json`; the renderer inlines them and they open full size on click. `inProgress` and `next` may be present only when `scope.inProgress` is true.
-- `ongoing`: board items as above, without `subIssues`, plus `done`: what was finished during the period, each `{ title, url }`, or `{ title, links: [url, url] }` for one change made in several repositories.
+- `ongoing`: board items as above, without `subIssues`, plus `done`: what was finished during the period, each `{ title, url }`, or `{ title, links: [url, url] }` for one change made in several repositories. Instead of or next to `done`, `figures` (`[{ label, value }]`) and `breakdowns` (`[{ title, entries: [{ label, value }] }]`) give counts, as on the security card.
 - `misc`: `{ title, url, kind, topic }` where `kind` is `fix` or `improvement` and `url` is the PR (or omitted for a folded security entry). Present exactly when `scope.offBoard` is true.
 
 Item summaries are one or two sentences on what changed for users, and why it matters. Say when a feature is limited to some users (a team preview, a beta) and what comes next. References like `opencollective/opencollective#123` and `@login` in summaries become links.
 
-Sections with several areas get quick filters by Engineering Area, and the misc list gets fix/improvement filters; the renderer adds them, nothing to write.
+Sections with several areas get quick filters by Engineering Area, and the misc list gets fix/improvement filters; the renderer adds them, nothing to write. It also adds a left outline of the top-level sections (only those, not individual items) that highlights the section being read. The page has no footer, and `generatedOn` is recorded but not shown.
 
 ## 5. Build, check, publish
 

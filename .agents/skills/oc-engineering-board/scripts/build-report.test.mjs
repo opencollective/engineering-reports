@@ -20,21 +20,50 @@ test('the example report is valid and renders every section', () => {
   const html = renderReport(example);
   for (const id of ['shipped', 'in-progress', 'ongoing', 'next', 'misc']) {
     assert.match(html, new RegExp(`id="${id}"`));
-    assert.match(html, new RegExp(`class="chip" href="#${id}"`), `header links to ${id}`);
+    assert.match(html, new RegExp(`class="toc-section" href="#${id}"`), `outline links to ${id}`);
   }
   assert.match(html, /<title>Engineering report: October 2026<\/title>/);
   assert.match(html, /<style>\n[\s\S]*--ink:/, 'inlines the shared stylesheet');
-  assert.doesNotMatch(html, /<link|<script|src="http/, 'stays self-contained');
+  assert.doesNotMatch(html, /<link|<script src|src="http/, 'stays self-contained');
+  assert.doesNotMatch(html, /Generated/);
+});
+
+test('the outline lists only the top-level sections', () => {
+  const html = renderReport(example);
+  const outline = html.slice(html.indexOf('<nav class="toc"'), html.indexOf('</nav>'));
+  const links = [...outline.matchAll(/class="toc-section" href="#([^"]+)"/g)].map(m => m[1]);
+  assert.deepEqual(links, ['numbers', 'highlights', 'shipped', 'in-progress', 'ongoing', 'next', 'misc']);
+  assert.doesNotMatch(outline, /#item-|#misc-/);
+});
+
+test('areas follow the board order', () => {
+  const html = renderReport(example);
+  const shipped = html.slice(html.indexOf('id="shipped"'), html.indexOf('id="in-progress"'));
+  const order = [...shipped.matchAll(/<span class="pill [^"]+">([^<]+)</g)].map(m => m[1].replace('&amp;', '&'));
+  assert.deepEqual(order, ['Security', 'Payment processors', 'Improvements', 'Compliance', 'Testing & CI']);
 });
 
 test('stats show merged pull requests per repository and no removed metrics', () => {
   const html = renderReport(example);
   assert.match(html, /<p class="tile-value">135</, 'total is the sum of the repositories');
   assert.match(html, />API<\/a>[\s\S]*>Frontend<\/a>[\s\S]*>PDF<\/a>/, 'repositories sorted by count');
+  assert.match(
+    html,
+    /href="https:\/\/github.com\/opencollective\/opencollective-api\/pulls\?q=is%3Apr\+is%3Amerged\+merged%3A2026-10-01..2026-10-31\+-author%3Aapp%2Frenovate\+-author%3Aapp%2Fdependabot"/,
+    'each repository links to its merged pull requests for the period',
+  );
+  assert.match(html, /<span class="issue-label">Closed<\/span>\s*<span class="tile-value">118/);
+  assert.match(html, /<span class="issue-label">Opened<\/span>\s*<span class="tile-value">104/);
+  assert.match(html, /issues\?q=is%3Aissue\+created%3A2026-10-01..2026-10-31/);
   assert.doesNotMatch(html, /Contributors|Projects shipped/);
   const report = clone();
   report.metrics.contributors = { value: 4 };
-  assert.ok(validateReport(report).errors.includes('metrics.contributors is no longer reported; remove it'));
+  report.metrics.issuesClosed = { value: 4 };
+  delete report.metrics.issues.opened;
+  const { errors } = validateReport(report);
+  assert.ok(errors.includes('metrics.contributors is no longer reported; remove it'));
+  assert.ok(errors.includes('metrics.issuesClosed is no longer reported; remove it (use metrics.issues)'));
+  assert.ok(errors.includes('metrics.issues.opened.value must be a non-negative integer'));
 });
 
 test('highlights are bullet points, and long ones warn', () => {
@@ -117,6 +146,18 @@ test('quick filters appear only where a section mixes areas', () => {
   assert.doesNotMatch(html, /id="filter-in-progress-/, 'two items are not worth filtering');
   assert.match(html, /id="filter-misc-fix"[\s\S]*id="filter-misc-improvement"/, 'misc filters by kind');
   assert.match(html, /#shipped:has\(#filter-shipped-compliance:checked\) \[data-filter\]:not\(\[data-filter="compliance"\]\)/);
+});
+
+test('ongoing items show figures and breakdowns for the period', () => {
+  const html = renderReport(example);
+  assert.match(html, /<dt>Reports received<\/dt><dd>12<\/dd>/);
+  assert.match(html, /<p class="breakdown-title">Reports received, by source<\/p><ul><li>Bug bounty<span class="count">9<\/span>/);
+  const report = clone();
+  report.shipped[0].figures = [{ label: 'x', value: 1 }];
+  report.ongoing[1].breakdowns = [{ title: 'By area', entries: [] }];
+  const { errors } = validateReport(report);
+  assert.ok(errors.includes('shipped[0].figures is only for ongoing items'));
+  assert.ok(errors.includes('ongoing[1].breakdowns[0].entries must be a non-empty array of { label, value }'));
 });
 
 test('misc entries are grouped by topic, all or none', () => {
