@@ -36,6 +36,7 @@ export const REPO_LABELS = {
   'opencollective/opencollective-pdf': 'PDF',
   'opencollective/opencollective-rest': 'REST',
   'opencollective/opencollective-images': 'Images',
+  'opencollective/opencollective-taxes': 'Taxes',
   'opencollective/opencollective': 'Issue tracker & docs',
 };
 

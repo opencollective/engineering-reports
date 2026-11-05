@@ -2,6 +2,8 @@
 
 A report covers one period (usually a calendar month: "the engineering work in October") and is published on GitHub Pages from the [opencollective/engineering-reports](https://github.com/opencollective/engineering-reports) repository, which also holds this skill. Every report has the same structure and design: the content goes into a `report.json` (plus optional screenshots beside it), and `scripts/build-report.mjs` renders it with `assets/report/style.css` into one self-contained HTML file. Edit the shared assets to change the design for all reports, and run `node --test scripts/build-report.test.mjs` from the skill folder after; write content only into `report.json` and its `images/`. When the board gains, renames or reorders an Engineering Area, update `AREAS` in the script: it sets each area's color and the order used everywhere in the report, which must match the order of the board's Engineering Area options; when a new service repository appears in the pull request breakdown, give it a short name in `REPO_LABELS`.
 
+**Service repositories** are every repository the off-board research and the metrics cover: `opencollective-api`, `opencollective-frontend`, `opencollective-pdf`, `opencollective-rest`, `opencollective-images` and `opencollective-taxes` (all under `opencollective/`), plus any new service repository with merged PRs in the period. Record the list you used in `scope.repos`.
+
 Readers are the team and fiscal hosts. Write for them: plain language, user-visible impact, no internal jargon, and never anything that identifies a security vulnerability. Every GitHub handle in the report links to its profile: the renderer does this for `people` and for `@login` in any text field.
 
 ## 1. Scope
@@ -9,7 +11,7 @@ Readers are the team and fiscal hosts. Write for them: plain language, user-visi
 Resolve the period to exact dates (`2026-10-01` to `2026-10-31`; "last month" is relative to today). Then ask the operator two questions in one message, before any research:
 
 - **In progress**: include current work in progress and upcoming priorities, or only work done during the period?
-- **Off-board work**: include work merged in the API and frontend repositories that is not on the board?
+- **Off-board work**: include work merged in the service repositories that is not on the board?
 
 In the same message, ask a third question, which no tool can answer yet:
 
@@ -23,10 +25,12 @@ Reports live in `reports/<YYYY-MM>/` at the root of the engineering-reports repo
 
 Do this before writing anything, so the operator can fix the board first.
 
-1. **Merged PRs**: list everything merged in the period in the API and frontend repositories. Drop dependency bots (`renovate[bot]`, `dependabot[bot]`). Keep other bot authors such as `sentry[bot]` autofixes: their merged PRs are real fixes.
+1. **Merged PRs**: list everything merged in the period in the service repositories. Drop dependency bots (`renovate[bot]`, `dependabot[bot]`). Keep other bot authors such as `sentry[bot]` autofixes: their merged PRs are real fixes.
 
    ```bash
    gh search prs --repo opencollective/opencollective-api --repo opencollective/opencollective-frontend \
+     --repo opencollective/opencollective-pdf --repo opencollective/opencollective-rest \
+     --repo opencollective/opencollective-images --repo opencollective/opencollective-taxes \
      --merged-at 2026-10-01..2026-10-31 --limit 1000 --json url,title,author,closedAt,repository,body \
      | jq '[.[] | select(.author.login | test("^(renovate|dependabot)\\[bot\\]$") | not)]'
    ```
@@ -67,7 +71,7 @@ For each item collect: title, URL, Engineering Area, Start and Target dates, sub
 
 **Metrics**, all for the period:
 
-- `prsMerged.byRepo`: merged PRs per service repository, dependency bots excluded: at least `opencollective-api`, `opencollective-frontend`, `opencollective-pdf`, `opencollective-rest` and `opencollective-images`, plus any other service that had merged PRs. Use one search over the organization and group by repository (`-author:app/renovate -author:app/dependabot`, 100 per page) rather than one search per repository, which hits GitHub's secondary rate limit. The report shows the total and one bar per repository; short names come from `REPO_LABELS` in the script.
+- `prsMerged.byRepo`: merged PRs per service repository, dependency bots excluded, for every service repository with merged PRs. Use one search over the organization and group by repository (`-author:app/renovate -author:app/dependabot`, 100 per page) rather than one search per repository, which hits GitHub's secondary rate limit. The report shows the total and one bar per repository; short names come from `REPO_LABELS` in the script.
 - `issues`: in `opencollective/opencollective`, issues `opened` (`is:issue created:2026-10-01..2026-10-31`) and issues `closed` for any reason (`is:issue closed:2026-10-01..2026-10-31`), split by how they were closed: `completed` (`reason:completed`, shown as resolved) and `notPlanned` (`-reason:completed`: not planned and duplicates), which must add up to the closed count. Read each `total_count` from `gh api -X GET search/issues`, and the previous period's the same way.
   - When something unusual drives the numbers, explain it in one short line in `issues.note`, shown under the tile: for example, from October 2026 part of the issue triage is automated, so many older issues get closed as resolved, not planned or duplicate. Mention in the notes when board bookkeeping (retroactive issues) inflates them.
 
@@ -81,7 +85,7 @@ When the previous period's `report.json` exists, copy its metric values as `prev
 
 - `period`: `label` ("October 2026"), `start`, `end` (ISO dates).
 - `generatedOn`: today's date (kept in the JSON, not shown).
-- `scope`: `inProgress`, `offBoard` (booleans), `repos` (the repositories the metrics and off-board research covered).
+- `scope`: `inProgress`, `offBoard` (booleans), `repos` (the service repositories the metrics and off-board research covered).
 - `summary`: the Highlights, five to eight bullet points (plus the misc one below), one short line each (under 180 characters): the work that mattered most to users, stated plainly with no lead-in. They are also shown on the site index, so together they should cover the period's main work, shipped and in progress (security, monitoring and other ongoing work included), not just one or two projects. Write them for end users: no internal tool or code names (TypeScript, GraphQL v2, Sentry); describe codebase work by what it brings, such as a platform that is simpler and safer to change. Bold the key words of each bullet with `**...**` (the feature or area: "Large **CSV exports** now run in the background for everyone."), so the big areas stand out at a glance; one to three per bullet. When `scope.offBoard` is true, add one more bullet (so up to nine) summing up the misc list: how many bugs were fixed, how many smaller improvements were made, and the topics they touch, most entries first ("We fixed **24 bugs** and made **12 smaller improvements** across expenses and payouts, contributions, the dashboard, tax forms, accounts and hosting."). Write it last, from the items.
 - `metrics`: `prsMerged: { byRepo: [{ repo, value, previous }] }`, `issues: { repo, closed: { value, previous, completed, notPlanned }, opened: { value, previous }, note }` (`previous`, the closed breakdown and `note` optional; `note` is one short line, `**bold**` allowed), and `previousLabel` ("September 2026") when any previous value is set.
 - `shipped`, `inProgress`, `next`: board items `{ title, url, area, summary, points, upNext, start, end, subIssues: { done, total }, prs, people, images }`. Only `title`, `url` and `area` are required. `area` is an Engineering Area option name. `images` is a list of `{ src, alt, caption }` with `src` relative to `report.json`; the renderer inlines them and they open full size on click. `inProgress` and `next` may be present only when `scope.inProgress` is true.

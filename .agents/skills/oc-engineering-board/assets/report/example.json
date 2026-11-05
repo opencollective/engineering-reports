@@ -10,7 +10,11 @@
     "offBoard": true,
     "repos": [
       "opencollective/opencollective-api",
-      "opencollective/opencollective-frontend"
+      "opencollective/opencollective-frontend",
+      "opencollective/opencollective-pdf",
+      "opencollective/opencollective-rest",
+      "opencollective/opencollective-images",
+      "opencollective/opencollective-taxes"
     ]
   },
   "summary": [
