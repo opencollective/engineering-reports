@@ -2,7 +2,7 @@
 
 A report covers one period (usually a calendar month: "the engineering work in October") and is published on GitHub Pages from the [opencollective/engineering-reports](https://github.com/opencollective/engineering-reports) repository, which also holds this skill. Every report has the same structure and design: the content goes into a `report.json` (plus optional screenshots beside it), and `scripts/build-report.mjs` renders it with `assets/report/style.css` into one self-contained HTML file. Edit the shared assets to change the design for all reports, and run `node --test scripts/build-report.test.mjs` from the skill folder after; write content only into `report.json` and its `images/`. When the board gains, renames or reorders an Engineering Area, update `AREAS` in the script: it sets each area's color and the order used everywhere in the report, which must match the order of the board's Engineering Area options; when a new service repository appears in the pull request breakdown, give it a short name in `REPO_LABELS`.
 
-**Service repositories** are every repository the off-board research and the metrics cover: `opencollective-api`, `opencollective-frontend`, `opencollective-pdf`, `opencollective-rest`, `opencollective-images`, `opencollective-taxes` and `opencollective-documentation` (all under `opencollective/`), plus any new service repository with merged PRs in the period. Record the list you used in `scope.repos`.
+**Service repositories** are every repository the off-board research and the metrics cover: `opencollective-api`, `opencollective-frontend`, `opencollective-pdf`, `opencollective-rest`, `opencollective-images` and `opencollective-taxes` (all under `opencollective/`), plus any new service repository with merged PRs in the period. Record the list you used in `scope.repos`.
 
 Readers are the team and fiscal hosts. Write for them: plain language, user-visible impact, no internal jargon, and never anything that identifies a security vulnerability. Every GitHub handle in the report links to its profile: the renderer does this for `people` and for `@login` in any text field.
 
@@ -31,7 +31,6 @@ Do this before writing anything, so the operator can fix the board first.
    gh search prs --repo opencollective/opencollective-api --repo opencollective/opencollective-frontend \
      --repo opencollective/opencollective-pdf --repo opencollective/opencollective-rest \
      --repo opencollective/opencollective-images --repo opencollective/opencollective-taxes \
-     --repo opencollective/opencollective-documentation \
      --merged-at 2026-10-01..2026-10-31 --limit 1000 --json url,title,author,closedAt,repository,body \
      | jq '[.[] | select(.author.login | test("^(renovate|dependabot)\\[bot\\]$") | not)]'
    ```

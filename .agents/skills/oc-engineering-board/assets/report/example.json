@@ -14,8 +14,7 @@
       "opencollective/opencollective-pdf",
       "opencollective/opencollective-rest",
       "opencollective/opencollective-images",
-      "opencollective/opencollective-taxes",
-      "opencollective/opencollective-documentation"
+      "opencollective/opencollective-taxes"
     ]
   },
   "summary": [
