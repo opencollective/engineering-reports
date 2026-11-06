@@ -18,7 +18,7 @@ This repository holds both the reports and the tooling that produces them:
 
 Ask an agent with the skill for a period, for example "generate a report for November". It follows [`references/report.md`](.agents/skills/oc-engineering-board/references/report.md): it asks two scope questions, researches the board and the merged pull requests, proposes board changes for approval, then writes `reports/<YYYY-MM>/report.json`.
 
-New reports start with `"draft": true`. Drafts are validated in CI but not published. Remove the flag when the report is approved.
+New reports start with `"draft": false`, so merging their pull request publishes them. Reports with `"draft": true` are validated in CI but not published; use it only to keep a report off the site.
 
 ## Building locally
 
