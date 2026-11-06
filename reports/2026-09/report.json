@@ -1,0 +1,500 @@
+{
+  "draft": false,
+  "period": {
+    "label": "September 2026",
+    "start": "2026-09-01",
+    "end": "2026-09-30"
+  },
+  "generatedOn": "2026-11-03",
+  "scope": {
+    "inProgress": true,
+    "offBoard": true,
+    "repos": [
+      "opencollective/opencollective-api",
+      "opencollective/opencollective-frontend"
+    ]
+  },
+  "summary": [
+    "Expense **category suggestions** now cover **5 more hosts**, and we retrained the model for **Open Source Collective**.",
+    "**Expense fixes**: approvals reset when tax or currency change, rejected expenses leave hold, and archived accounts take no new expenses.",
+    "**Spanish** translation reached **94%**, and German financial terms were reviewed.",
+    "We now track **payment success and failure rates** for Stripe, PayPal and Wise, to spot processor issues before users do.",
+    "An agent proposes **help documentation updates** for the changes we ship, reviewed by the team before they go live.",
+    "We started retiring **unused features**, with notice, keeping the platform **simpler and safer to change**.",
+    "The new **platform tip** flow is being tested with hosts beyond Open Source Collective.",
+    "**Security**: we triaged **176 reports**, deployed **4 fixes**, and re-checked **23 older reports**, now closed.",
+    "We fixed **12 bugs** and made **5 smaller improvements** across hosting, accounts, the dashboard, contributions, integrations, expenses and our tooling."
+  ],
+  "metrics": {
+    "previousLabel": "August 2026",
+    "prsMerged": {
+      "byRepo": [
+        {
+          "repo": "opencollective/opencollective-api",
+          "value": 70,
+          "previous": 22
+        },
+        {
+          "repo": "opencollective/opencollective-frontend",
+          "value": 58,
+          "previous": 18
+        },
+        {
+          "repo": "opencollective/opencollective-rest",
+          "value": 8,
+          "previous": 1
+        },
+        {
+          "repo": "opencollective/opencollective-pdf",
+          "value": 2,
+          "previous": 0
+        },
+        {
+          "repo": "opencollective/opencollective-images",
+          "value": 7,
+          "previous": 0
+        }
+      ]
+    },
+    "issues": {
+      "repo": "opencollective/opencollective",
+      "closed": {
+        "value": 19,
+        "previous": 14,
+        "completed": 13,
+        "notPlanned": 6
+      },
+      "opened": {
+        "value": 20,
+        "previous": 5
+      }
+    }
+  },
+  "shipped": [
+    {
+      "title": "Payment success and failure rates tracked per processor",
+      "url": "https://github.com/opencollective/opencollective/issues/8983",
+      "area": "Payment processors",
+      "summary": "Success and failure rates for **Stripe, PayPal and Wise**, to spot processor issues before users report them.",
+      "start": "2026-09-29",
+      "end": "2026-09-30",
+      "prs": 1,
+      "people": [
+        "kewitz"
+      ],
+      "points": [
+        "One-time payments and recurring contributions",
+        "Payouts and webhooks"
+      ]
+    },
+    {
+      "title": "Help documentation updated with an agent",
+      "url": "https://github.com/opencollective/opencollective/issues/8584",
+      "area": "Developer experience",
+      "summary": "An agent proposes **help documentation updates** for the changes we ship; the team reviews each one.",
+      "start": "2026-09-14",
+      "end": "2026-09-29",
+      "prs": 6,
+      "people": [
+        "Betree"
+      ],
+      "points": [
+        "9 documentation updates merged in September"
+      ]
+    },
+    {
+      "title": "Expense category suggestions for more hosts",
+      "url": "https://github.com/opencollective/opencollective/issues/9069",
+      "area": "Improvements",
+      "summary": "Our machine learning service suggests **expense categories** for **5 more hosts**, with a retrained model for open source.",
+      "start": "2026-09-18",
+      "end": "2026-09-21",
+      "prs": 6,
+      "people": [
+        "Betree"
+      ],
+      "points": [
+        "Suggestions for Raft Foundation, Pact Collective, Metagov, Open Finance Technologies and Open Finance Consortium",
+        "Open source model retrained",
+        "Service restructured, with automated tests and quality checks for each model",
+        "Suggestions take into account whether an expense is the host's own",
+        "Experiment: one generic model, Jev, for hosts with no expense history yet"
+      ]
+    }
+  ],
+  "inProgress": [
+    {
+      "title": "Expense flow fixes and improvements",
+      "url": "https://github.com/opencollective/opencollective/issues/9001",
+      "area": "Bug fixes",
+      "start": "2026-09-09",
+      "prs": 11,
+      "people": [
+        "Betree",
+        "kewitz",
+        "znarf"
+      ],
+      "points": [
+        "Approved expenses go back to pending when tax or currency change",
+        "Rejected expenses no longer stay on hold",
+        "No new expenses on archived accounts",
+        "Self-approval policy applied correctly to host admins",
+        "Cross-host expense invitations completed by the payee's host",
+        "Payment processor fees no longer capped when paying"
+      ],
+      "upNext": "Recurring expenses, vendor comments, payout method visibility"
+    },
+    {
+      "title": "Unused features removed, with notice",
+      "url": "https://github.com/opencollective/opencollective/issues/8987",
+      "area": "Technical debt",
+      "summary": "Retiring features nobody relies on anymore, so the platform is **simpler and safer to change**.",
+      "start": "2026-09-24",
+      "prs": 6,
+      "people": [
+        "Betree"
+      ],
+      "points": [
+        "Unused transaction group queries removed from the API",
+        "Leftover data from the old W-9 tax form bot removed",
+        "Gift cards funded by credit card only, ahead of their removal",
+        "No new prepaid payment methods"
+      ],
+      "upNext": "Account following, in-app surveys, subscription quantities"
+    },
+    {
+      "title": "Internationalization improvements",
+      "url": "https://github.com/opencollective/opencollective/issues/9026",
+      "area": "Improvements",
+      "summary": "Open Collective in the **user's language**, beyond the website.",
+      "start": "2026-09-11",
+      "prs": 13,
+      "people": [
+        "Betree",
+        "znarf"
+      ],
+      "points": [
+        "German financial terms reviewed",
+        "Spanish translation 94% complete",
+        "Homepage figures formatted for the reader's language"
+      ],
+      "upNext": "German style guide, then each user's language remembered and used in emails"
+    },
+    {
+      "title": "Platform tips",
+      "url": "https://github.com/opencollective/opencollective/issues/9008",
+      "area": "Improvements",
+      "summary": "Better **platform tips**, tested with more hosts.",
+      "start": "2026-09-01",
+      "prs": 2,
+      "people": [
+        "znarf"
+      ],
+      "points": [
+        "New platform tip flow tested with hosts beyond Open Source Collective"
+      ],
+      "upNext": "Tips on by default on Open Source Collective, tested in October"
+    },
+    {
+      "title": "Updated traffic monitoring",
+      "url": "https://github.com/opencollective/opencollective/issues/8976",
+      "area": "Reliability & monitoring",
+      "summary": "A new version of the tool that **monitors incoming traffic**, to spot and block abuse.",
+      "start": "2026-09-24",
+      "prs": 6,
+      "people": [
+        "znarf"
+      ],
+      "points": [
+        "One monitoring pipeline for the four main services",
+        "Calls between our own servers identified"
+      ],
+      "upNext": "Finished on October 9"
+    },
+    {
+      "title": "Semi-automated dependency updates",
+      "url": "https://github.com/opencollective/opencollective/issues/8985",
+      "area": "Platform maintenance",
+      "summary": "Routine dependency updates in **regular batches of safe updates**.",
+      "start": "2026-08-10",
+      "prs": 4,
+      "people": [
+        "znarf"
+      ],
+      "upNext": "A shared Renovate configuration for every service"
+    }
+  ],
+  "ongoing": [
+    {
+      "title": "Servers and dependencies up to date",
+      "url": "https://github.com/opencollective/opencollective/issues/8984",
+      "area": "Platform maintenance",
+      "summary": "Servers, runtimes and dependencies of every service **kept current**.",
+      "prs": 11,
+      "people": [
+        "znarf"
+      ],
+      "done": [
+        {
+          "title": "REST service moved to Express 5",
+          "url": "https://github.com/opencollective/opencollective-rest/pull/671"
+        },
+        {
+          "title": "Two outdated cryptography libraries replaced by Node.js built-ins",
+          "links": [
+            "https://github.com/opencollective/opencollective-api/pull/12041",
+            "https://github.com/opencollective/opencollective-api/pull/12157"
+          ]
+        },
+        {
+          "title": "Unmaintained request package removed from the image service",
+          "url": "https://github.com/opencollective/opencollective-images/pull/651"
+        },
+        {
+          "title": "Frontend libraries updated: react-window 2 and GraphQL Code Generator 7",
+          "links": [
+            "https://github.com/opencollective/opencollective-frontend/pull/12425",
+            "https://github.com/opencollective/opencollective-frontend/pull/12426"
+          ]
+        },
+        {
+          "title": "Cloudflare address list refreshed at build time instead of from an old package",
+          "url": "https://github.com/opencollective/opencollective-frontend/pull/12404"
+        },
+        {
+          "title": "npm kept on version 11 after problems with npm 12",
+          "links": [
+            "https://github.com/opencollective/opencollective-api/pull/12120",
+            "https://github.com/opencollective/opencollective-frontend/pull/12452"
+          ]
+        },
+        {
+          "title": "API build prepared for Babel 8",
+          "url": "https://github.com/opencollective/opencollective-api/pull/12062"
+        }
+      ]
+    },
+    {
+      "title": "Review security tickets",
+      "url": "https://github.com/opencollective/opencollective/issues/8994",
+      "area": "Security",
+      "summary": "Triaged **176 security reports** sent to our public security disclosure email, and re-checked **older reports**. Details stay private.",
+      "people": [
+        "Betree"
+      ],
+      "figures": [
+        {
+          "label": "Reports triaged from the security email",
+          "value": 176
+        },
+        {
+          "label": "Reports documented",
+          "value": 13
+        },
+        {
+          "label": "Fixed and deployed",
+          "value": 4
+        },
+        {
+          "label": "Older reports re-checked and closed as resolved",
+          "value": 23
+        },
+        {
+          "label": "Closed as not a vulnerability or duplicate",
+          "value": 3
+        }
+      ],
+      "breakdowns": [
+        {
+          "title": "Reports documented, by source",
+          "entries": [
+            {
+              "label": "Bug bounty",
+              "value": 8
+            },
+            {
+              "label": "Internal review",
+              "value": 5
+            }
+          ]
+        },
+        {
+          "title": "Fixes, by area",
+          "entries": [
+            {
+              "label": "OAuth & API tokens",
+              "value": 1
+            },
+            {
+              "label": "Sign-in & 2FA",
+              "value": 1
+            },
+            {
+              "label": "Permissions",
+              "value": 1
+            },
+            {
+              "label": "Expenses",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "misc": [
+    {
+      "title": "Limited tiers count each recurring contributor once",
+      "url": "https://github.com/opencollective/opencollective-api/pull/12079",
+      "kind": "fix",
+      "topic": "Contributions",
+      "people": [
+        "Betree"
+      ]
+    },
+    {
+      "title": "Guest contributions to busy collectives are no longer wrongly declined",
+      "url": "https://github.com/opencollective/opencollective-api/pull/12096",
+      "kind": "fix",
+      "topic": "Contributions",
+      "people": [
+        "znarf"
+      ]
+    },
+    {
+      "title": "Virtual cards in use are no longer paused as inactive",
+      "url": "https://github.com/opencollective/opencollective-api/pull/12080",
+      "kind": "fix",
+      "topic": "Hosting",
+      "people": [
+        "kewitz"
+      ]
+    },
+    {
+      "title": "Accountants can open host reports",
+      "url": "https://github.com/opencollective/opencollective-api/pull/12180",
+      "kind": "fix",
+      "topic": "Hosting",
+      "people": [
+        "kewitz"
+      ]
+    },
+    {
+      "title": "Accountants can request CSV exports, with consistent labels",
+      "url": "https://github.com/opencollective/opencollective-api/pull/12113",
+      "kind": "fix",
+      "topic": "Dashboard & search",
+      "people": [
+        "kewitz"
+      ]
+    },
+    {
+      "title": "Fix the dashboard account switcher for accountants",
+      "url": "https://github.com/opencollective/opencollective-frontend/pull/12422",
+      "kind": "fix",
+      "topic": "Dashboard & search",
+      "people": [
+        "kewitz"
+      ]
+    },
+    {
+      "title": "Very long search terms no longer break search",
+      "url": "https://github.com/opencollective/opencollective-api/pull/12161",
+      "kind": "fix",
+      "topic": "Dashboard & search",
+      "people": [
+        "Betree"
+      ]
+    },
+    {
+      "title": "Two-factor authentication with passkeys and security keys works again",
+      "url": "https://github.com/opencollective/opencollective-api/pull/12203",
+      "kind": "fix",
+      "topic": "Accounts",
+      "people": [
+        "znarf"
+      ]
+    },
+    {
+      "title": "\"Bluesky\" spelled correctly",
+      "url": "https://github.com/opencollective/opencollective-frontend/pull/12347",
+      "kind": "fix",
+      "topic": "Accounts",
+      "people": [
+        "shuuji3"
+      ]
+    },
+    {
+      "title": "Fewer API requests interrupted with an error",
+      "url": "https://github.com/opencollective/opencollective-api/pull/12160",
+      "kind": "fix",
+      "topic": "API, integrations & emails",
+      "people": [
+        "znarf"
+      ]
+    },
+    {
+      "title": "Authorized apps show the date they were connected",
+      "url": "https://github.com/opencollective/opencollective-frontend/pull/12424",
+      "kind": "fix",
+      "topic": "API, integrations & emails",
+      "people": [
+        "znarf"
+      ]
+    },
+    {
+      "title": "Automated tests keep running after a storage tool they used was discontinued",
+      "url": "https://github.com/opencollective/opencollective-api/pull/12092",
+      "kind": "fix",
+      "topic": "Developer tools",
+      "people": [
+        "znarf"
+      ]
+    },
+    {
+      "title": "Every new account is asked to complete its profile, including people invited to a team",
+      "url": "https://github.com/opencollective/opencollective-api/pull/12087",
+      "kind": "improvement",
+      "topic": "Accounts",
+      "people": [
+        "kewitz"
+      ]
+    },
+    {
+      "title": "Hosts can set the currency of a grant",
+      "url": "https://github.com/opencollective/opencollective-frontend/pull/12420",
+      "kind": "improvement",
+      "topic": "Expenses & payouts",
+      "people": [
+        "kewitz"
+      ]
+    },
+    {
+      "title": "Bank account sync: search imported rows by expense or contribution ID",
+      "url": "https://github.com/opencollective/opencollective-api/pull/12216",
+      "kind": "improvement",
+      "topic": "Hosting",
+      "people": [
+        "Betree"
+      ]
+    },
+    {
+      "title": "Host community statistics refresh in half the time",
+      "url": "https://github.com/opencollective/opencollective-api/pull/12049",
+      "kind": "improvement",
+      "topic": "Hosting",
+      "people": [
+        "kewitz"
+      ]
+    },
+    {
+      "title": "Faster automated tests for the API and frontend",
+      "url": "https://github.com/opencollective/opencollective-frontend/pull/12402",
+      "kind": "improvement",
+      "topic": "Developer tools",
+      "people": [
+        "Betree"
+      ]
+    }
+  ]
+}

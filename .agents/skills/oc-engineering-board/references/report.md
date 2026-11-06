@@ -104,7 +104,7 @@ node .agents/skills/oc-engineering-board/scripts/build-report.mjs <dir>/report.j
 
 The script validates the JSON and fails with a list of problems; fix them and rerun. Then read `report.html` back for empty sections and broken text. `npm run preview` builds the whole site, drafts included, into `_site/`.
 
-A report starts with `"draft": true` at the top of `report.json`. Drafts are validated in CI but left off the public site. While a report is a draft, share it for review as a private cloud artifact titled `Engineering report: <period label>` when the session can publish artifacts, otherwise give the operator the file path. Remove the `draft` flag only once the operator approves the report.
+A report starts with `"draft": false` at the top of `report.json`, so merging its pull request publishes it directly; the review happens before that. Set `"draft": true` only when the operator asks to keep a report off the public site (drafts are still validated in CI). Share the report for review as a private cloud artifact titled `Engineering report: <period label>` when the session can publish artifacts, otherwise give the operator the file path.
 
 Review usually goes through several rounds. After each round of feedback, rebuild and republish the same artifact (same URL, so the operator keeps one link and its version history), and keep the changes local until the operator asks to push; then commit content, shared assets and this reference together. Feedback that is a general rule (wording, layout, what to surface) belongs in this reference, the renderer or the stylesheet, not only in the period's `report.json`.
 
